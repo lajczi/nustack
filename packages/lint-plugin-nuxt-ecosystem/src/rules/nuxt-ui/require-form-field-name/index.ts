@@ -5,7 +5,9 @@ import { defineTemplateVisitor, hasAttribute } from '../utils.js'
 
 export const requireFormFieldName: Rule = {
   meta: {
-    type: 'problem',
+    // A `<UFormField>` without `name` still renders and labels its control; it only opts out of
+    // automatic error routing, which a purely presentational field group legitimately wants.
+    type: 'suggestion',
     docs: {
       description: 'Require a validation target on Nuxt UI form fields used inside a form.',
       url: docsUrl('nuxt-ui/require-form-field-name'),

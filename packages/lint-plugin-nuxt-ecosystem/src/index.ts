@@ -79,10 +79,23 @@ export interface NuxtUiConfigsOptions {
 
 const RULES = Object.keys(plugin.rules!).sort()
 
+function ruleMeta(name: string): Rule.RuleMetaData | undefined {
+  return (plugin.rules![name] as Rule.RuleModule).meta
+}
+
 /** Whether a rule resolves components, and so takes the `prefix` option. */
 function acceptsPrefix(name: string): boolean {
-  const schema = (plugin.rules![name] as Rule.RuleModule).meta?.schema
+  const schema = ruleMeta(name)?.schema
   return Array.isArray(schema) && Boolean((schema[0] as any)?.properties?.prefix)
+}
+
+/**
+ * `problem` rules report code that is already broken — a removed v4 API, props that cancel each
+ * other out, a control with no accessible name — so they error. `suggestion` rules express a
+ * preference between two things that both work, so they only warn.
+ */
+function severityOf(name: string): 'error' | 'warn' {
+  return ruleMeta(name)?.type === 'problem' ? 'error' : 'warn'
 }
 
 /** Returns Vue-SFC-scoped Nuxt UI configs. */
@@ -95,10 +108,13 @@ export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config
       name: 'nustack/nuxt-ui',
       files: NUXT_UI_GLOB,
       plugins: pluginRef,
-      rules: Object.fromEntries(RULES.map(name => [
-        `@nustack/nuxt-ui/${name}`,
-        prefix !== 'U' && acceptsPrefix(name) ? ['warn', { prefix }] : 'warn',
-      ])),
+      rules: Object.fromEntries(RULES.map((name) => {
+        const level = severityOf(name)
+        return [
+          `@nustack/nuxt-ui/${name}`,
+          prefix !== 'U' && acceptsPrefix(name) ? [level, { prefix }] : level,
+        ]
+      })),
     })
   }
 

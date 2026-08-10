@@ -1,7 +1,7 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
 import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, getAttribute, hasAttribute, hasMeaningfulText, hasNonEmptyAttribute } from '../utils.js'
+import { defineTemplateVisitor, getAttribute, hasAttribute, hasLabelContent, hasNonEmptyAttribute } from '../utils.js'
 
 function canBeLoading(node: any): boolean {
   const attribute = getAttribute(node, 'loading')
@@ -35,7 +35,7 @@ export const requireIconButtonLabel: Rule = {
           return
         }
         if (hasNonEmptyAttribute(node, 'label') || hasNonEmptyAttribute(node, 'aria-label')
-          || hasNonEmptyAttribute(node, 'title') || hasMeaningfulText(node)) {
+          || hasNonEmptyAttribute(node, 'title') || hasLabelContent(node)) {
           return
         }
         context.report({ loc: node.startTag.loc, messageId: 'missingLabel' })

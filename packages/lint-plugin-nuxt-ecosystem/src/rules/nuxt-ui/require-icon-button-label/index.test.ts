@@ -11,6 +11,7 @@ describe('require-icon-button-label', () => {
         { filename: 'component.vue', code: '<template><UButton icon="i-lucide-search" aria-label="Search" /></template>' },
         { filename: 'component.vue', code: '<template><UButton icon="i-lucide-save">Save</UButton></template>' },
         { filename: 'component.vue', code: '<template><UButton :loading="false" /></template>' },
+        { filename: 'component.vue', code: '<template><UButton icon="i-lucide-save"><span>Save</span></UButton></template>' },
       ],
       invalid: [
         { filename: 'component.vue', code: '<template><UButton icon="i-lucide-search" /></template>', errors: [{ messageId: 'missingLabel' }] },

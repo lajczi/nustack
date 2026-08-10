@@ -60,13 +60,16 @@ export function hasSlot(node: any, name: string): boolean {
   })
 }
 
-export function hasMeaningfulText(node: any): boolean {
+/**
+ * Whether the default slot can produce an accessible name. Interpolations and child elements
+ * both count: their content is unknowable here, and for a rule that errors a missed
+ * `<span>Save</span>` is far worse than staying quiet on a wrapped icon.
+ */
+export function hasLabelContent(node: any): boolean {
   return (node.children ?? []).some((child: any) => {
     if (child.type === 'VText')
       return child.value.trim().length > 0
-    // Interpolations can provide a runtime label. Child components (for example
-    // `<UIcon>`) are intentionally not treated as an accessible label.
-    return child.type === 'VExpressionContainer'
+    return child.type === 'VExpressionContainer' || child.type === 'VElement'
   })
 }
 

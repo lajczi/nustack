@@ -16,6 +16,7 @@ import { preferUModal as preferUModalRule } from './rules/nuxt-ui/prefer-u-modal
 import { preferUProgress as preferUProgressRule } from './rules/nuxt-ui/prefer-u-progress/index.js'
 import { preferUSeparator as preferUSeparatorRule } from './rules/nuxt-ui/prefer-u-separator/index.js'
 import { preferUTable as preferUTableRule } from './rules/nuxt-ui/prefer-u-table/index.js'
+import { preferUTree as preferUTreeRule } from './rules/nuxt-ui/prefer-u-tree/index.js'
 import { requireAvatarAlt as requireAvatarAltRule } from './rules/nuxt-ui/require-avatar-alt/index.js'
 import { requireFormControlLabel as requireFormControlLabelRule } from './rules/nuxt-ui/require-form-control-label/index.js'
 import { requireFormFieldName as requireFormFieldNameRule } from './rules/nuxt-ui/require-form-field-name/index.js'
@@ -46,6 +47,7 @@ const plugin = eslintCompatPlugin({
     'prefer-u-progress': preferUProgressRule,
     'prefer-u-separator': preferUSeparatorRule,
     'prefer-u-table': preferUTableRule,
+    'prefer-u-tree': preferUTreeRule,
     'require-avatar-alt': requireAvatarAltRule,
     'require-form-control-label': requireFormControlLabelRule,
     'require-form-field-name': requireFormFieldNameRule,
@@ -102,6 +104,7 @@ export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config
         '@nustack/nuxt-ui/prefer-u-progress': 'warn',
         '@nustack/nuxt-ui/prefer-u-separator': 'warn',
         '@nustack/nuxt-ui/prefer-u-table': 'warn',
+        '@nustack/nuxt-ui/prefer-u-tree': 'warn',
         '@nustack/nuxt-ui/require-avatar-alt': 'warn',
         '@nustack/nuxt-ui/require-form-control-label': 'warn',
         '@nustack/nuxt-ui/require-form-field-name': 'warn',
@@ -137,6 +140,7 @@ export const preferUFormControls: Rule.RuleModule = plugin.rules!['prefer-u-form
 export const preferUFormField: Rule.RuleModule = plugin.rules!['prefer-u-form-field'] as Rule.RuleModule
 export const preferULink: Rule.RuleModule = plugin.rules!['prefer-u-link'] as Rule.RuleModule
 export const preferUTable: Rule.RuleModule = plugin.rules!['prefer-u-table'] as Rule.RuleModule
+export const preferUTree: Rule.RuleModule = plugin.rules!['prefer-u-tree'] as Rule.RuleModule
 export const noDeprecatedComponents: Rule.RuleModule = plugin.rules!['no-deprecated-components'] as Rule.RuleModule
 export const noDeprecatedModelModifiers: Rule.RuleModule = plugin.rules!['no-deprecated-model-modifiers'] as Rule.RuleModule
 export const noConflictingStateProps: Rule.RuleModule = plugin.rules!['no-conflicting-state-props'] as Rule.RuleModule

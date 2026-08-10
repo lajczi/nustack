@@ -1,5 +1,6 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor, getAttribute, hasAttribute, hasMeaningfulText, hasNonEmptyAttribute } from '../utils.js'
 
 function canBeLoading(node: any): boolean {
@@ -19,15 +20,17 @@ export const requireIconButtonLabel: Rule = {
       description: 'Require an accessible label for icon-, avatar-, and loading-only Nuxt UI buttons.',
       url: docsUrl('nuxt-ui/require-icon-button-label'),
     },
-    schema: [],
+    schema: componentOptionsSchema(),
     messages: {
       missingLabel: 'Icon-, avatar-, or loading-only `<UButton>` needs `label`, `aria-label`, or an accessible `title`.',
     },
   },
   create(context: any) {
+    const matcher = createComponentMatcher(context)
+
     return defineTemplateVisitor(context, {
       VElement(node: any) {
-        if (node.name !== 'ubutton'
+        if (!matcher.is(node, 'Button')
           || (!hasAttribute(node, 'icon') && !hasAttribute(node, 'avatar') && !canBeLoading(node))) {
           return
         }

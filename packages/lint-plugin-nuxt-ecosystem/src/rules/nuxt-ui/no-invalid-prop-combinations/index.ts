@@ -1,5 +1,6 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor, getStaticAttribute, hasAttribute, hasRawOptOut } from '../utils.js'
 
 interface StaticValue {
@@ -44,7 +45,7 @@ export const noInvalidPropCombinations: Rule = {
       description: 'Disallow documented Nuxt UI prop combinations that cannot work together.',
       url: docsUrl('nuxt-ui/no-invalid-prop-combinations'),
     },
-    schema: [],
+    schema: componentOptionsSchema(),
     messages: {
       fileButtonMultiple: '`UFileUpload variant="button"` only supports a single file; remove `multiple` or use `variant="area"`.',
       fileLayoutArea: '`UFileUpload layout` is only supported with `variant="area"`.',
@@ -53,12 +54,14 @@ export const noInvalidPropCombinations: Rule = {
     },
   },
   create(context: any) {
+    const matcher = createComponentMatcher(context)
+
     return defineTemplateVisitor(context, {
       VElement(node: any) {
         if (hasRawOptOut(node))
           return
 
-        if (node.name === 'ufileupload') {
+        if (matcher.is(node, 'FileUpload')) {
           const variant = staticValue(node, 'variant')
           const multiple = staticBoolean(node, 'multiple')
           const layout = staticValue(node, 'layout')
@@ -80,7 +83,7 @@ export const noInvalidPropCombinations: Rule = {
           }
         }
 
-        if (node.name === 'uaccordion') {
+        if (matcher.is(node, 'Accordion')) {
           const type = getStaticAttribute(node, 'type')
           if (type === 'multiple' && hasAttribute(node, 'collapsible'))
             context.report({ loc: node.startTag.loc, messageId: 'accordionCollapsible' })

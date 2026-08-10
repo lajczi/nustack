@@ -12,6 +12,7 @@ const TAILWIND_ENTRY = fileURLToPath(new URL('./fixtures/tailwind.css', import.m
 
 const CONTEXT: NustackContext = {
   modules: { nuxtUi: true, mdc: false },
+  nuxtUi: { prefix: 'U' },
   tailwind: { detected: true, entryPoint: TAILWIND_ENTRY },
   autoImports: ['ref', 'useRuntimeConfig'],
   components: ['UButton'],

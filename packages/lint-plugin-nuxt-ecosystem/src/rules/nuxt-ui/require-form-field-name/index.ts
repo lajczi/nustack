@@ -1,6 +1,7 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { defineTemplateVisitor, hasAncestor, hasAttribute } from '../utils.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
+import { defineTemplateVisitor, hasAttribute } from '../utils.js'
 
 export const requireFormFieldName: Rule = {
   meta: {
@@ -9,16 +10,18 @@ export const requireFormFieldName: Rule = {
       description: 'Require a validation target on Nuxt UI form fields used inside a form.',
       url: docsUrl('nuxt-ui/require-form-field-name'),
     },
-    schema: [],
+    schema: componentOptionsSchema(),
     messages: {
       missingName: 'Add `name` or `error-pattern` to this `<UFormField>` so `<UForm>` can route validation errors to it.',
     },
   },
   create(context: any) {
+    const matcher = createComponentMatcher(context)
+
     return defineTemplateVisitor(context, {
       VElement(node: any) {
-        if (node.name === 'uformfield'
-          && hasAncestor(node, 'uform')
+        if (matcher.is(node, 'FormField')
+          && matcher.hasAncestor(node, 'Form')
           && !hasAttribute(node, 'name')
           && !hasAttribute(node, 'error-pattern')) {
           context.report({ loc: node.startTag.loc, messageId: 'missingName' })

@@ -71,13 +71,23 @@ export const NUXT_UI_GLOB = ['**/*.vue']
 export interface NuxtUiConfigsOptions {
   /** Cumulative variant; `minimal` ships nothing, `recommended` (default) the rule set. */
   variant?: 'minimal' | 'recommended'
+  /** Component prefix from `ui.prefix`. Passed to every rule that resolves components. */
+  prefix?: string
   /** Extra rule overrides, merged onto the Vue-SFC scope. */
   rules?: Linter.RulesRecord
 }
 
+const RULES = Object.keys(plugin.rules!).sort()
+
+/** Whether a rule resolves components, and so takes the `prefix` option. */
+function acceptsPrefix(name: string): boolean {
+  const schema = (plugin.rules![name] as Rule.RuleModule).meta?.schema
+  return Array.isArray(schema) && Boolean((schema[0] as any)?.properties?.prefix)
+}
+
 /** Returns Vue-SFC-scoped Nuxt UI configs. */
 export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config[] {
-  const { variant = 'recommended', rules } = options
+  const { variant = 'recommended', prefix = 'U', rules } = options
   const configs: Linter.Config[] = []
 
   if (variant !== 'minimal') {
@@ -85,32 +95,10 @@ export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config
       name: 'nustack/nuxt-ui',
       files: NUXT_UI_GLOB,
       plugins: pluginRef,
-      rules: {
-        '@nustack/nuxt-ui/no-conflicting-state-props': 'warn',
-        '@nustack/nuxt-ui/no-deprecated-components': 'warn',
-        '@nustack/nuxt-ui/no-deprecated-model-modifiers': 'warn',
-        '@nustack/nuxt-ui/no-invalid-prop-combinations': 'warn',
-        '@nustack/nuxt-ui/prefer-link-to': 'warn',
-        '@nustack/nuxt-ui/prefer-u-button': 'warn',
-        '@nustack/nuxt-ui/prefer-u-form-controls': 'warn',
-        '@nustack/nuxt-ui/prefer-u-form-field': 'warn',
-        '@nustack/nuxt-ui/prefer-u-icon': 'warn',
-        '@nustack/nuxt-ui/prefer-u-kbd': 'warn',
-        '@nustack/nuxt-ui/prefer-u-link': 'warn',
-        '@nustack/nuxt-ui/prefer-u-modal': 'warn',
-        '@nustack/nuxt-ui/prefer-u-progress': 'warn',
-        '@nustack/nuxt-ui/prefer-u-separator': 'warn',
-        '@nustack/nuxt-ui/prefer-u-table': 'warn',
-        '@nustack/nuxt-ui/prefer-u-tree': 'warn',
-        '@nustack/nuxt-ui/require-avatar-alt': 'warn',
-        '@nustack/nuxt-ui/require-form-control-label': 'warn',
-        '@nustack/nuxt-ui/require-form-field-name': 'warn',
-        '@nustack/nuxt-ui/require-icon-button-label': 'warn',
-        '@nustack/nuxt-ui/require-overlay-title': 'warn',
-        '@nustack/nuxt-ui/require-popover-content': 'warn',
-        '@nustack/nuxt-ui/require-tooltip-content': 'warn',
-        '@nustack/nuxt-ui/require-u-app': 'warn',
-      },
+      rules: Object.fromEntries(RULES.map(name => [
+        `@nustack/nuxt-ui/${name}`,
+        prefix !== 'U' && acceptsPrefix(name) ? ['warn', { prefix }] : 'warn',
+      ])),
     })
   }
 

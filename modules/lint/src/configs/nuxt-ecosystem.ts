@@ -19,6 +19,9 @@ export function nuxtEcosystemConfig(
   options: NuxtEcosystemOptions = {},
 ): Linter.Config[] {
   return isEnabled(options.nuxtUi, context.modules.nuxtUi)
-    ? nuxtUiConfigs({ rules: resolveConcernRules(subOptions(options.nuxtUi)) })
+    ? nuxtUiConfigs({
+        prefix: context.nuxtUi.prefix,
+        rules: resolveConcernRules(subOptions(options.nuxtUi)),
+      })
     : []
 }

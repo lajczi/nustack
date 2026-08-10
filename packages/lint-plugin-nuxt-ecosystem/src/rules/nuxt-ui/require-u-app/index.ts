@@ -1,5 +1,7 @@
 import type { Rule } from '@oxlint/plugins'
+import type { ComponentMatcher } from '../component-matcher.js'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor } from '../utils.js'
 
 function isNuxtAppFile(filename: string): boolean {
@@ -10,10 +12,12 @@ function isNuxtAppFile(filename: string): boolean {
     && !normalized.includes('/layouts/')
 }
 
-function containsUApp(node: any): boolean {
-  if (node.name === 'uapp')
+function containsUApp(node: any, matcher: ComponentMatcher): boolean {
+  if (matcher.is(node, 'App'))
     return true
-  return (node.children ?? []).some((child: any) => child.type === 'VElement' && containsUApp(child))
+  return (node.children ?? []).some(
+    (child: any) => child.type === 'VElement' && containsUApp(child, matcher),
+  )
 }
 
 export const requireUApp: Rule = {
@@ -23,7 +27,7 @@ export const requireUApp: Rule = {
       description: 'Require the Nuxt UI App provider in the Nuxt application root.',
       url: docsUrl('nuxt-ui/require-u-app'),
     },
-    schema: [],
+    schema: componentOptionsSchema(),
     messages: {
       missingApp: 'Wrap the application in `<UApp>` to provide Nuxt UI configuration, toasts, tooltips, and programmatic overlays.',
     },
@@ -33,9 +37,11 @@ export const requireUApp: Rule = {
     if (!isNuxtAppFile(filename))
       return {}
 
+    const matcher = createComponentMatcher(context)
+
     return defineTemplateVisitor(context, {
       VElement(node: any) {
-        if (node.parent?.type === 'VDocumentFragment' && !containsUApp(node))
+        if (node.parent?.type === 'VDocumentFragment' && !containsUApp(node, matcher))
           context.report({ loc: node.startTag.loc, messageId: 'missingApp' })
       },
     })

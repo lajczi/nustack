@@ -11,6 +11,7 @@ import { resolveTarget } from '../src/target'
 // purely by the target/options under test rather than by missing detection.
 const FULL_CONTEXT: NustackContext = {
   modules: { nuxtUi: true, mdc: false },
+  nuxtUi: { prefix: 'U' },
   tailwind: { detected: true, entryPoint: 'app/assets/css/main.css' },
   autoImports: ['ref'],
   components: ['UButton'],
@@ -89,6 +90,7 @@ describe('target: vue-app', () => {
   it('drops tailwind/nuxtEcosystem when standalone detection finds nothing', async () => {
     const EMPTY: NustackContext = {
       modules: { nuxtUi: false, mdc: false },
+      nuxtUi: { prefix: 'U' },
       tailwind: { detected: false, entryPoint: null },
       autoImports: [],
       components: [],

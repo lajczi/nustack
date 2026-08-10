@@ -5,6 +5,10 @@ export interface NustackContext {
     /** MDC-capable Markdown renderer (`@nuxt/content`, `@comark/nuxt`, or legacy `@nuxtjs/mdc`). */
     mdc: boolean
   }
+  nuxtUi: {
+    /** Component prefix from `ui.prefix`, needed to recognise `<UButton>` and friends. */
+    prefix: string
+  }
   tailwind: {
     detected: boolean
     /**
@@ -24,6 +28,7 @@ export interface NustackContext {
 
 export const EMPTY_CONTEXT: NustackContext = {
   modules: { nuxtUi: false, mdc: false },
+  nuxtUi: { prefix: 'U' },
   tailwind: { detected: false, entryPoint: null },
   autoImports: [],
   components: [],

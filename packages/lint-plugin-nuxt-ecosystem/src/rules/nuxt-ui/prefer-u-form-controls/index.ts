@@ -1,5 +1,6 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor, hasRawOptOut } from '../utils.js'
 
 const CONTROL_MAP: Record<string, string> = {
@@ -35,16 +36,12 @@ export const preferUFormControls: Rule = {
       description: 'Prefer Nuxt UI form controls over raw form elements.',
       url: docsUrl('nuxt-ui/prefer-u-form-controls'),
     },
-    schema: [{
-      type: 'object',
-      properties: {
-        /** Extra `tag` → `Component` mappings, merged onto the built-in native-element map. */
-        controls: { type: 'object', additionalProperties: { type: 'string' } },
-        /** Extra input-`type` → `Component` mappings, merged onto the built-in type map. */
-        types: { type: 'object', additionalProperties: { type: 'string' } },
-      },
-      additionalProperties: false,
-    }],
+    schema: componentOptionsSchema({
+      /** Extra `tag` → `Component` mappings, merged onto the built-in native-element map. */
+      controls: { type: 'object', additionalProperties: { type: 'string' } },
+      /** Extra input-`type` → `Component` mappings, merged onto the built-in type map. */
+      types: { type: 'object', additionalProperties: { type: 'string' } },
+    }),
     messages: {
       preferUFormControl: 'Use `<{{ replacement }}>` instead of `<{{ tag }}>`; add `data-raw` to allow the native element.',
       preferSpecificControl: 'Use `<{{ replacement }}>` instead of `<UInput type="{{ type }}">`; add `data-raw` to allow the native element.',
@@ -54,6 +51,7 @@ export const preferUFormControls: Rule = {
     const options = context.options[0] ?? {}
     const controlMap: Record<string, string> = { ...CONTROL_MAP, ...options.controls }
     const typeMap: Record<string, string> = { ...TYPE_MAP, ...options.types }
+    const matcher = createComponentMatcher(context)
 
     return defineTemplateVisitor(context, {
       VElement(node: any) {
@@ -63,7 +61,7 @@ export const preferUFormControls: Rule = {
         const type = staticType(node)
 
         // `<UInput type="number">`, already Nuxt UI, but a dedicated component fits better.
-        if (node.name === 'uinput') {
+        if (matcher.is(node, 'Input')) {
           const replacement = type ? typeMap[type] : null
           if (replacement) {
             context.report({

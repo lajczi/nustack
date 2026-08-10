@@ -7,6 +7,7 @@ import { applyNustackConfig } from '../src/config'
 
 const FULL_CONTEXT: NustackContext = {
   modules: { nuxtUi: true, mdc: false },
+  nuxtUi: { prefix: 'U' },
   tailwind: { detected: true, entryPoint: 'app/assets/css/main.css' },
   autoImports: ['ref'],
   components: ['UButton'],

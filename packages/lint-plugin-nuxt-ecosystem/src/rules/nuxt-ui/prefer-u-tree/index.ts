@@ -1,5 +1,6 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor, hasRawOptOut } from '../utils.js'
 
 function hasStaticTreeRole(node: any): boolean {
@@ -16,16 +17,18 @@ export const preferUTree: Rule = {
       description: 'Prefer UTree over hand-written elements with an explicit tree role.',
       url: docsUrl('nuxt-ui/prefer-u-tree'),
     },
-    schema: [],
+    schema: componentOptionsSchema(),
     messages: {
       preferUTree:
         'Use `<UTree>` instead of a custom `role="tree"`; custom trees must implement the complete tree keyboard and focus model. Add `data-raw` to keep it.',
     },
   },
   create(context: any) {
+    const matcher = createComponentMatcher(context)
+
     return defineTemplateVisitor(context, {
       VElement(node: any) {
-        if (node.name === 'utree' || hasRawOptOut(node) || !hasStaticTreeRole(node))
+        if (matcher.is(node, 'Tree') || hasRawOptOut(node) || !hasStaticTreeRole(node))
           return
 
         context.report({

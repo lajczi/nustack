@@ -1,5 +1,6 @@
 import type { Rule } from '@oxlint/plugins'
 import { docsUrl } from '../../../utils/docs-url.js'
+import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
 import { defineTemplateVisitor } from '../utils.js'
 
 /** Verified 2026-07-21 against the ui.nuxt.com v4 migration guide; re-verify on the next major. */
@@ -7,7 +8,7 @@ const DEPRECATED_MODIFIERS: Record<string, string> = {
   nullify: 'nullable',
 }
 
-const TARGET_COMPONENTS = ['uinput', 'uinputnumber', 'utextarea']
+const TARGET_COMPONENTS = ['Input', 'InputNumber', 'Textarea']
 
 function vModel(node: any): any {
   return node.startTag.attributes.find(
@@ -34,16 +35,12 @@ export const noDeprecatedModelModifiers: Rule = {
       description: 'Disallow the `v-model.nullify` modifier renamed to `.nullable` in Nuxt UI v4.',
       url: docsUrl('nuxt-ui/no-deprecated-model-modifiers'),
     },
-    schema: [{
-      type: 'object',
-      properties: {
-        /** Extra `old` → `new` modifier renames, merged onto the built-in table. */
-        modifiers: { type: 'object', additionalProperties: { type: 'string' } },
-        /** Components to check, lowercased. Replaces the built-in list when provided. */
-        components: { type: 'array', items: { type: 'string' } },
-      },
-      additionalProperties: false,
-    }],
+    schema: componentOptionsSchema({
+      /** Extra `old` → `new` modifier renames, merged onto the built-in table. */
+      modifiers: { type: 'object', additionalProperties: { type: 'string' } },
+      /** Canonical unprefixed names (`'Input'`). Replaces the built-in list when provided. */
+      components: { type: 'array', items: { type: 'string' } },
+    }),
     messages: {
       preferNullable: 'The `v-model.{{ old }}` modifier was renamed in Nuxt UI v4, use `v-model.{{ replacement }}` instead.',
     },
@@ -51,11 +48,12 @@ export const noDeprecatedModelModifiers: Rule = {
   create(context: any) {
     const options = context.options[0] ?? {}
     const modifiers: Record<string, string> = { ...DEPRECATED_MODIFIERS, ...options.modifiers }
-    const targets = new Set<string>(options.components ?? TARGET_COMPONENTS)
+    const matcher = createComponentMatcher(context)
+    const targets: string[] = options.components ?? TARGET_COMPONENTS
 
     return defineTemplateVisitor(context, {
       VElement(node: any) {
-        if (!targets.has(node.name))
+        if (!matcher.isOneOf(node, targets))
           return
 
         const model = vModel(node)

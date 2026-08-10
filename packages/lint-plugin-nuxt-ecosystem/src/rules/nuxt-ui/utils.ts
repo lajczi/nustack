@@ -1,4 +1,5 @@
-/** Note: `vue-eslint-parser` lowercases element names, so match `node.name` lowercased. */
+// `node.name` is only a safe comparison for native HTML tags; components go through
+// `createComponentMatcher`, which handles kebab-case, prefixes and import aliases.
 export function defineTemplateVisitor(context: any, visitor: Record<string, (node: any) => void>) {
   const services = context.sourceCode.parserServices
   if (typeof services?.defineTemplateBodyVisitor !== 'function')
@@ -67,23 +68,6 @@ export function hasMeaningfulText(node: any): boolean {
     // `<UIcon>`) are intentionally not treated as an accessible label.
     return child.type === 'VExpressionContainer'
   })
-}
-
-export function componentName(name: string): string {
-  if (!name.startsWith('u'))
-    return name
-  const rest = name.slice(1).replace(/(^|-)([a-z])/g, (_match, _separator, character) => character.toUpperCase())
-  return `U${rest}`
-}
-
-export function hasAncestor(node: any, name: string): boolean {
-  let parent = node.parent
-  while (parent) {
-    if (parent.type === 'VElement' && parent.name === name)
-      return true
-    parent = parent.parent
-  }
-  return false
 }
 
 export function hasVModel(node: any, argumentName: string | null): boolean {

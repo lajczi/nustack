@@ -36,11 +36,13 @@ verified against the live v4 docs.
 
 ## Options
 
-Register team-specific renames (proper-cased keys), merged onto the built-in table:
+Register team-specific renames, merged onto the built-in table. Keys accept either spelling
+(`UOldWidget` or `OldWidget`); values are written unprefixed:
 
 ```js
 '@nustack/nuxt-ui/no-deprecated-components': ['warn', {
-  components: { UOldWidget: 'UNewWidget' },
+  components: { UOldWidget: 'NewWidget' },
+  prefix: 'U', // your `ui.prefix`, when it is not the default
 }]
 ```
 

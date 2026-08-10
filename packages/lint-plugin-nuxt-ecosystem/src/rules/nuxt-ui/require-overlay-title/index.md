@@ -1,15 +1,24 @@
 # `@nustack/nuxt-ui/require-overlay-title`
 
-Require an accessible title on `UModal`, `UDrawer`, and `USlideover`. A `title` prop,
-`#title` slot, `aria-label`, or `aria-labelledby` satisfies the rule.
+Require an accessible title on `UModal`, `UDrawer`, and `USlideover`. A `title` prop, a
+non-empty `#title` slot, or an accessible name in the `content` configuration satisfies the
+rule. Root ARIA attributes label the trigger path, not the rendered overlay content.
+
+## Incorrect
 
 ```vue
-<!-- Incorrect -->
-<UModal><template #body>Delete this project?</template></UModal>
+<template>
+  <UModal><template #body>Delete this project?</template></UModal>
+</template>
+```
 
-<!-- Correct -->
-<UModal title="Delete project" />
-<UModal><template #title>Delete project</template></UModal>
+## Correct
+
+```vue
+<template>
+  <UModal title="Delete project" />
+  <UModal><template #title>Delete project</template></UModal>
+</template>
 ```
 
 ## Further reading

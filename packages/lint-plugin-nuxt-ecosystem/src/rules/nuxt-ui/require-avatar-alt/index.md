@@ -3,15 +3,24 @@
 Require `alt` on image-backed `UAvatar` components. Use `aria-hidden` for an explicitly
 decorative avatar.
 
+## Incorrect
+
 ```vue
-<!-- Incorrect -->
-<UAvatar src="/users/ben.png" />
+<template>
+  <UAvatar src="/users/ben.png" />
+</template>
+```
 
-<!-- Correct: meaningful image -->
-<UAvatar src="/users/ben.png" alt="Benjamin" />
+## Correct
 
-<!-- Correct: decorative image -->
-<UAvatar src="/brand-mark.png" aria-hidden="true" />
+```vue
+<template>
+  <!-- meaningful image -->
+  <UAvatar src="/users/ben.png" alt="Benjamin" />
+
+  <!-- decorative image -->
+  <UAvatar src="/brand-mark.png" aria-hidden="true" />
+</template>
 ```
 
 ## Further reading

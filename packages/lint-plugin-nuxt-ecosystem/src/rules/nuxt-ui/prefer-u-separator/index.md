@@ -3,12 +3,20 @@
 Prefer `USeparator` over a raw `hr` element for consistent orientation, color, size, and
 optional label handling.
 
-```vue
-<!-- Incorrect -->
-<hr>
+## Incorrect
 
-<!-- Correct -->
-<USeparator />
+```vue
+<template>
+  <hr>
+</template>
+```
+
+## Correct
+
+```vue
+<template>
+  <USeparator />
+</template>
 ```
 
 Use `data-raw` when native markup is intentional.

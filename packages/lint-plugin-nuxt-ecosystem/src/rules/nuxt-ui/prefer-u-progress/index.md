@@ -2,12 +2,20 @@
 
 Prefer Nuxt UI's accessible and theme-aware `UProgress` over a raw `progress` element.
 
-```vue
-<!-- Incorrect -->
-<progress :value="50" max="100" />
+## Incorrect
 
-<!-- Correct -->
-<UProgress :model-value="50" :max="100" />
+```vue
+<template>
+  <progress :value="50" max="100" />
+</template>
+```
+
+## Correct
+
+```vue
+<template>
+  <UProgress :model-value="50" :max="100" />
+</template>
 ```
 
 Use `data-raw` when native markup is intentional.

@@ -2,12 +2,20 @@
 
 Prefer Nuxt UI's `UKbd` over a raw `kbd` element for theme-aware keyboard hints.
 
-```vue
-<!-- Incorrect -->
-<kbd>K</kbd>
+## Incorrect
 
-<!-- Correct -->
-<UKbd value="K" />
+```vue
+<template>
+  <kbd>K</kbd>
+</template>
+```
+
+## Correct
+
+```vue
+<template>
+  <UKbd value="K" />
+</template>
 ```
 
 Use `data-raw` when native markup is intentional.

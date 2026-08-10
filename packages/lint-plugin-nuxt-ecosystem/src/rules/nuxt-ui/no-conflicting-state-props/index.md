@@ -4,18 +4,27 @@ Do not combine controlled state (`open`, `v-model:open`, `model-value`, or `v-mo
 the corresponding uncontrolled initializer (`default-open` or `default-value`). Nuxt UI's
 APIs document `default-*` for cases where the caller does not control state.
 
-The pairing is a component-authoring convention rather than a Nuxt UI detail, so the rule
-applies to any component element. Native HTML tags are skipped.
+The rule is limited to Nuxt UI components that document the corresponding controlled and
+uncontrolled props. It does not infer this convention for application components.
+
+## Incorrect
 
 ```vue
-<!-- Incorrect -->
-<UModal v-model:open="open" default-open />
+<template>
+  <UModal v-model:open="open" default-open />
+</template>
+```
 
-<!-- Correct: controlled -->
-<UModal v-model:open="open" />
+## Correct
 
-<!-- Correct: uncontrolled -->
-<UModal default-open />
+```vue
+<template>
+  <!-- controlled -->
+  <UModal v-model:open="open" />
+
+  <!-- uncontrolled -->
+  <UModal default-open />
+</template>
 ```
 
 ## Further reading

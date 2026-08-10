@@ -9,15 +9,19 @@ bindings, drag and drop, or expansion controls.
 ## Incorrect
 
 ```vue
-<ul role="tree">
-  <TreeItem v-for="item in items" :key="item.id" :item="item" />
-</ul>
+<template>
+  <ul role="tree">
+    <TreeItem v-for="item in items" :key="item.id" :item="item" />
+  </ul>
+</template>
 ```
 
 ## Correct
 
 ```vue
-<UTree :items="items" />
+<template>
+  <UTree :items="items" />
+</template>
 ```
 
 Add `data-raw` to the tree root when a custom implementation is required. A custom tree

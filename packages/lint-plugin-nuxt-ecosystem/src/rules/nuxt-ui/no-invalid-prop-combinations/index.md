@@ -9,19 +9,28 @@ Currently covered:
 - `UFileUpload position` requires `variant="area"` and `layout="list"`.
 - `UAccordion collapsible` is only meaningful for the default `type="single"`.
 
-Dynamic values are ignored when the relationship cannot be proven at lint time.
-Use `data-raw` for an intentional low-level exception.
+Dynamic values are ignored when the relationship cannot be proven at lint time. `data-raw`
+does not disable API correctness checks; use a standard ESLint disable comment for an
+exceptional suppression.
+
+## Incorrect
 
 ```vue
-<!-- Incorrect -->
-<UFileUpload variant="button" multiple />
-<UFileUpload variant="area" position="outside" />
-<UAccordion type="multiple" collapsible :items="items" />
+<template>
+  <UFileUpload variant="button" multiple />
+  <UFileUpload variant="area" position="outside" />
+  <UAccordion type="multiple" collapsible :items="items" />
+</template>
+```
 
-<!-- Correct -->
-<UFileUpload variant="button" />
-<UFileUpload variant="area" layout="list" position="outside" />
-<UAccordion type="single" collapsible :items="items" />
+## Correct
+
+```vue
+<template>
+  <UFileUpload variant="button" />
+  <UFileUpload variant="area" layout="list" position="outside" />
+  <UAccordion type="single" collapsible :items="items" />
+</template>
 ```
 
 ## Further reading

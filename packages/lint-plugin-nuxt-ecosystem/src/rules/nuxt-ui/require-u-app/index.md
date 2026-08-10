@@ -4,13 +4,19 @@ Require `UApp` in the Nuxt `app.vue` root. Nuxt UI documents it as the provider 
 configuration, reading direction, body-lock behavior, toasts, tooltips, and programmatic
 modals/slideovers.
 
+## Incorrect
+
+`app.vue` without the Nuxt UI provider:
+
 ```vue
-<!-- Incorrect: app.vue without the Nuxt UI provider -->
 <template>
   <NuxtPage />
 </template>
+```
 
-<!-- Correct -->
+## Correct
+
+```vue
 <template>
   <UApp>
     <NuxtPage />

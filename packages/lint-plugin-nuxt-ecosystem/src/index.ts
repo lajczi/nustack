@@ -8,6 +8,7 @@ import { preferLinkTo as preferLinkToRule } from './rules/nuxt-ui/prefer-link-to
 import { preferSemanticColors as preferSemanticColorsRule } from './rules/nuxt-ui/prefer-semantic-colors/index.js'
 import { preferUButton as preferUButtonRule } from './rules/nuxt-ui/prefer-u-button/index.js'
 import { preferUFormControls as preferUFormControlsRule } from './rules/nuxt-ui/prefer-u-form-controls/index.js'
+import { preferUFormField as preferUFormFieldRule } from './rules/nuxt-ui/prefer-u-form-field/index.js'
 import { preferUIcon as preferUIconRule } from './rules/nuxt-ui/prefer-u-icon/index.js'
 import { preferUKbd as preferUKbdRule } from './rules/nuxt-ui/prefer-u-kbd/index.js'
 import { preferULink as preferULinkRule } from './rules/nuxt-ui/prefer-u-link/index.js'
@@ -37,6 +38,7 @@ const plugin = eslintCompatPlugin({
     'prefer-semantic-colors': preferSemanticColorsRule,
     'prefer-u-button': preferUButtonRule,
     'prefer-u-form-controls': preferUFormControlsRule,
+    'prefer-u-form-field': preferUFormFieldRule,
     'prefer-u-icon': preferUIconRule,
     'prefer-u-kbd': preferUKbdRule,
     'prefer-u-link': preferULinkRule,
@@ -92,6 +94,7 @@ export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config
         '@nustack/nuxt-ui/prefer-semantic-colors': 'warn',
         '@nustack/nuxt-ui/prefer-u-button': 'warn',
         '@nustack/nuxt-ui/prefer-u-form-controls': 'warn',
+        '@nustack/nuxt-ui/prefer-u-form-field': 'warn',
         '@nustack/nuxt-ui/prefer-u-icon': 'warn',
         '@nustack/nuxt-ui/prefer-u-kbd': 'warn',
         '@nustack/nuxt-ui/prefer-u-link': 'warn',
@@ -131,6 +134,7 @@ plugin.configs = {
 
 export const preferUButton: Rule.RuleModule = plugin.rules!['prefer-u-button'] as Rule.RuleModule
 export const preferUFormControls: Rule.RuleModule = plugin.rules!['prefer-u-form-controls'] as Rule.RuleModule
+export const preferUFormField: Rule.RuleModule = plugin.rules!['prefer-u-form-field'] as Rule.RuleModule
 export const preferULink: Rule.RuleModule = plugin.rules!['prefer-u-link'] as Rule.RuleModule
 export const preferUTable: Rule.RuleModule = plugin.rules!['prefer-u-table'] as Rule.RuleModule
 export const noDeprecatedComponents: Rule.RuleModule = plugin.rules!['no-deprecated-components'] as Rule.RuleModule

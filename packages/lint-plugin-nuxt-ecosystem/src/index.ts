@@ -5,7 +5,6 @@ import { noDeprecatedComponents as noDeprecatedComponentsRule } from './rules/nu
 import { noDeprecatedModelModifiers as noDeprecatedModelModifiersRule } from './rules/nuxt-ui/no-deprecated-model-modifiers/index.js'
 import { noInvalidPropCombinations as noInvalidPropCombinationsRule } from './rules/nuxt-ui/no-invalid-prop-combinations/index.js'
 import { preferLinkTo as preferLinkToRule } from './rules/nuxt-ui/prefer-link-to/index.js'
-import { preferSemanticColors as preferSemanticColorsRule } from './rules/nuxt-ui/prefer-semantic-colors/index.js'
 import { preferUButton as preferUButtonRule } from './rules/nuxt-ui/prefer-u-button/index.js'
 import { preferUFormControls as preferUFormControlsRule } from './rules/nuxt-ui/prefer-u-form-controls/index.js'
 import { preferUFormField as preferUFormFieldRule } from './rules/nuxt-ui/prefer-u-form-field/index.js'
@@ -36,7 +35,6 @@ const plugin = eslintCompatPlugin({
     'no-deprecated-model-modifiers': noDeprecatedModelModifiersRule,
     'no-invalid-prop-combinations': noInvalidPropCombinationsRule,
     'prefer-link-to': preferLinkToRule,
-    'prefer-semantic-colors': preferSemanticColorsRule,
     'prefer-u-button': preferUButtonRule,
     'prefer-u-form-controls': preferUFormControlsRule,
     'prefer-u-form-field': preferUFormFieldRule,
@@ -93,7 +91,6 @@ export function nuxtUiConfigs(options: NuxtUiConfigsOptions = {}): Linter.Config
         '@nustack/nuxt-ui/no-deprecated-model-modifiers': 'warn',
         '@nustack/nuxt-ui/no-invalid-prop-combinations': 'warn',
         '@nustack/nuxt-ui/prefer-link-to': 'warn',
-        '@nustack/nuxt-ui/prefer-semantic-colors': 'warn',
         '@nustack/nuxt-ui/prefer-u-button': 'warn',
         '@nustack/nuxt-ui/prefer-u-form-controls': 'warn',
         '@nustack/nuxt-ui/prefer-u-form-field': 'warn',
@@ -146,7 +143,6 @@ export const noDeprecatedModelModifiers: Rule.RuleModule = plugin.rules!['no-dep
 export const noConflictingStateProps: Rule.RuleModule = plugin.rules!['no-conflicting-state-props'] as Rule.RuleModule
 export const noInvalidPropCombinations: Rule.RuleModule = plugin.rules!['no-invalid-prop-combinations'] as Rule.RuleModule
 export const preferLinkTo: Rule.RuleModule = plugin.rules!['prefer-link-to'] as Rule.RuleModule
-export const preferSemanticColors: Rule.RuleModule = plugin.rules!['prefer-semantic-colors'] as Rule.RuleModule
 export const preferUIcon: Rule.RuleModule = plugin.rules!['prefer-u-icon'] as Rule.RuleModule
 export const preferUKbd: Rule.RuleModule = plugin.rules!['prefer-u-kbd'] as Rule.RuleModule
 export const preferUModal: Rule.RuleModule = plugin.rules!['prefer-u-modal'] as Rule.RuleModule

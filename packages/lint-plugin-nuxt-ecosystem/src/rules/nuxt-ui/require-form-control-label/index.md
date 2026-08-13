@@ -24,9 +24,11 @@ supported `label` or `legend` API, ARIA naming, native `<label>` associations, a
 </template>
 ```
 
+A `UFormField` label only names a field that renders a single control. Controls in one
+`v-if` / `v-else-if` / `v-else` chain are alternatives, so the chain counts as one control.
+
 Dynamic bindings are accepted because their runtime value cannot be proven statically.
-`data-raw` does not disable accessibility checks; use a standard ESLint disable comment for
-an intentional exception.
+An intentional exception uses a standard ESLint disable comment.
 
 ## Further reading
 

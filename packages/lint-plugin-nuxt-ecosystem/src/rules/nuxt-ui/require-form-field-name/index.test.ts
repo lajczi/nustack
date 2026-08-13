@@ -1,17 +1,19 @@
-import { RuleTester } from 'eslint'
 import { describe, it } from 'vitest'
-import vueParser from 'vue-eslint-parser'
-import plugin from '../../../index.js'
+import { ruleTester as tester } from '../../../../tests/rule-tester.js'
+import { nuxtUiPlugin } from '../../../index.js'
 
 describe('require-form-field-name', () => {
   it('requires a validation target inside UForm', () => {
-    const tester = new RuleTester({ languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: vueParser } })
-    tester.run('require-form-field-name', plugin.rules?.['require-form-field-name'] as never, {
+    tester.run('require-form-field-name', nuxtUiPlugin.rules['require-form-field-name'], {
       valid: [
-        { filename: 'component.vue', code: '<template><UForm :state="state"><UFormField name="email" /></UForm></template>' },
-        { filename: 'component.vue', code: '<template><UFormField label="Display only" /></template>' },
+        { code: '<template><UForm :state="state"><UFormField name="email" /></UForm></template>' },
+        { code: '<template><UFormField label="Display only" /></template>' },
       ],
-      invalid: [{ filename: 'component.vue', code: '<template><UForm :state="state"><UFormField label="Email" /></UForm></template>', errors: [{ messageId: 'missingName' }] }],
+      invalid: [
+        { code: '<template><UForm :state="state"><UFormField label="Email" /></UForm></template>', errors: [{ messageId: 'missingName' }] },
+        { code: '<template><UForm :state="state"><UFormField name="" /></UForm></template>', errors: [{ messageId: 'missingName' }] },
+        { code: '<template><UForm :state="state"><UFormField :name="undefined" /></UForm></template>', errors: [{ messageId: 'missingName' }] },
+      ],
     })
   })
 })

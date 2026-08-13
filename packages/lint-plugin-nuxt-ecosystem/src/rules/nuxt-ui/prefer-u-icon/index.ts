@@ -1,6 +1,8 @@
-import type { Rule } from '@oxlint/plugins'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { defineTemplateVisitor, getStaticAttribute, hasRawOptOut } from '../utils.js'
+import { defineTemplateVisitor, getStaticAttribute } from '../../../utils/template.js'
+import { nuxtUiPrefix } from '../components.js'
 
 export const preferUIcon: Rule = {
   meta: {
@@ -11,18 +13,19 @@ export const preferUIcon: Rule = {
     },
     schema: [],
     messages: {
-      preferIcon: 'Use `<UIcon name="{{ icon }}" />` instead of a raw icon class.',
+      preferIcon: 'Use `<{{ component }} name="{{ icon }}" />` instead of a raw icon class.',
     },
   },
-  create(context: any) {
+  create(context: Context): Visitor {
+    const component = `${nuxtUiPrefix(context)}Icon`
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
-        if (hasRawOptOut(node) || (node.name !== 'i' && node.name !== 'span'))
+      VElement(node: VueAST.VElement) {
+        if (node.name !== 'i' && node.name !== 'span')
           return
         const classes = getStaticAttribute(node, 'class')
         const icon = classes?.split(/\s+/).find((value: string) => /^i-[\w-]+$/.test(value))
         if (icon)
-          context.report({ loc: node.startTag.loc, messageId: 'preferIcon', data: { icon } })
+          context.report({ loc: node.startTag.loc, messageId: 'preferIcon', data: { component, icon } })
       },
     })
   },

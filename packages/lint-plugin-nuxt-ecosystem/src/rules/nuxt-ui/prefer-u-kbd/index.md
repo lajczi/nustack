@@ -18,7 +18,11 @@ Prefer Nuxt UI's `UKbd` over a raw `kbd` element for theme-aware keyboard hints.
 </template>
 ```
 
-Use `data-raw` when native markup is intentional.
+Suppress intentional native markup with
+`<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-kbd -->`.
+
+Only genuine native elements are reported: a component whose name merely lowercases to the
+tag (`<Kbd>`) is left alone.
 
 ## Further reading
 

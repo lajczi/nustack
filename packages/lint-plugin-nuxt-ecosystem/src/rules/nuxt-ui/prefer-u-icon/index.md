@@ -1,7 +1,9 @@
 # `@nustack/nuxt-ui/prefer-u-icon`
 
 Prefer Nuxt UI's `UIcon` component and its `name` prop over raw Iconify utility classes.
-Use `data-raw` for a deliberate low-level icon implementation.
+Only a native `<i>` or `<span>` is reported, never a component whose name merely lowercases
+to one (`<Span>`). Suppress a deliberate low-level icon implementation with
+`<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-icon -->`.
 
 ## Incorrect
 

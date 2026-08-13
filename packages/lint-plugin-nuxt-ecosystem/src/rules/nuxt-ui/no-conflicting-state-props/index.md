@@ -4,8 +4,10 @@ Do not combine controlled state (`open`, `v-model:open`, `model-value`, or `v-mo
 the corresponding uncontrolled initializer (`default-open` or `default-value`). Nuxt UI's
 APIs document `default-*` for cases where the caller does not control state.
 
-The rule is limited to Nuxt UI components that document the corresponding controlled and
-uncontrolled props. It does not infer this convention for application components.
+The rule is limited to Nuxt UI components, which document the pairing. It does not infer the
+convention for application components — `<UserCard default-value model-value>` may mean something
+else entirely — and a known nullish binding (`:open="undefined"`) supplies no state, so it does
+not conflict.
 
 ## Incorrect
 

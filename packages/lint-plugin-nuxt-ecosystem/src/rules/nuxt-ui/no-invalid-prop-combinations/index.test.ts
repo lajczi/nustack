@@ -1,24 +1,21 @@
-import { RuleTester } from 'eslint'
 import { describe, it } from 'vitest'
-import vueParser from 'vue-eslint-parser'
-import plugin from '../../../index.js'
+import { ruleTester as tester } from '../../../../tests/rule-tester.js'
+import { nuxtUiPlugin } from '../../../index.js'
 
 describe('no-invalid-prop-combinations', () => {
   it('checks documented component constraints', () => {
-    const tester = new RuleTester({ languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: vueParser } })
-    tester.run('no-invalid-prop-combinations', plugin.rules?.['no-invalid-prop-combinations'] as never, {
+    tester.run('no-invalid-prop-combinations', nuxtUiPlugin.rules['no-invalid-prop-combinations'], {
       valid: [
-        { filename: 'component.vue', code: '<template><UFileUpload variant="button" :multiple="false" /></template>' },
-        { filename: 'component.vue', code: '<template><UFileUpload variant="area" layout="list" position="inside" /></template>' },
-        { filename: 'component.vue', code: '<template><UFileUpload :variant="variant" :position="position" /></template>' },
-        { filename: 'component.vue', code: '<template><UAccordion type="multiple" /></template>' },
-        { filename: 'component.vue', code: '<template><UAccordion type="multiple" collapsible data-raw /></template>' },
+        { code: '<template><UFileUpload variant="button" :multiple="false" /></template>' },
+        { code: '<template><UFileUpload variant="area" layout="list" position="inside" /></template>' },
+        { code: '<template><UFileUpload :variant="variant" :position="position" /></template>' },
+        { code: '<template><UAccordion type="multiple" /></template>' },
       ],
       invalid: [
-        { filename: 'component.vue', code: '<template><UFileUpload variant="button" multiple /></template>', errors: [{ messageId: 'fileButtonMultiple' }] },
-        { filename: 'component.vue', code: '<template><UFileUpload variant="button" layout="list" /></template>', errors: [{ messageId: 'fileLayoutArea' }] },
-        { filename: 'component.vue', code: '<template><UFileUpload position="inside" /></template>', errors: [{ messageId: 'filePositionList' }] },
-        { filename: 'component.vue', code: '<template><UAccordion type="multiple" collapsible /></template>', errors: [{ messageId: 'accordionCollapsible' }] },
+        { code: '<template><UFileUpload variant="button" multiple /></template>', errors: [{ messageId: 'fileButtonMultiple' }] },
+        { code: '<template><UFileUpload variant="button" layout="list" /></template>', errors: [{ messageId: 'fileLayoutArea' }] },
+        { code: '<template><UFileUpload position="inside" /></template>', errors: [{ messageId: 'filePositionList' }] },
+        { code: '<template><UAccordion type="multiple" collapsible /></template>', errors: [{ messageId: 'accordionCollapsible' }] },
       ],
     })
   })

@@ -24,6 +24,7 @@ bindings, drag and drop, or expansion controls.
 </template>
 ```
 
-Add `data-raw` to the tree root when a custom implementation is required. A custom tree
+Suppress the report with `<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-tree -->`
+when a custom implementation is required. A custom tree
 remains responsible for arrow-key navigation, Home/End behavior, expansion state, focus
 movement, and keyboard-equivalent reordering.

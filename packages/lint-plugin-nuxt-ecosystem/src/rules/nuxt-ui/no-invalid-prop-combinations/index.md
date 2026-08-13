@@ -9,9 +9,8 @@ Currently covered:
 - `UFileUpload position` requires `variant="area"` and `layout="list"`.
 - `UAccordion collapsible` is only meaningful for the default `type="single"`.
 
-Dynamic values are ignored when the relationship cannot be proven at lint time. `data-raw`
-does not disable API correctness checks; use a standard ESLint disable comment for an
-exceptional suppression.
+Dynamic values are ignored when the relationship cannot be proven at lint time. An
+exceptional suppression uses a standard ESLint disable comment.
 
 ## Incorrect
 

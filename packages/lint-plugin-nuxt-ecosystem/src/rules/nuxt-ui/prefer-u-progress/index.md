@@ -18,7 +18,11 @@ Prefer Nuxt UI's accessible and theme-aware `UProgress` over a raw `progress` el
 </template>
 ```
 
-Use `data-raw` when native markup is intentional.
+Suppress intentional native markup with
+`<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-progress -->`.
+
+Only genuine native elements are reported: a component whose name merely lowercases to the
+tag (`<Progress>`) is left alone, and so are SVG elements.
 
 ## Further reading
 

@@ -24,7 +24,8 @@ modals/slideovers.
 </template>
 ```
 
-Files under `components`, `pages`, and `layouts` are ignored even if named `App.vue`.
+Only the project-root `app.vue` and Nuxt 4's `app/app.vue` are checked. Other files named
+`App.vue`, including Vue entry components and components inside workspace packages, are ignored.
 
 ## Further reading
 

@@ -1,7 +1,8 @@
-import type { Rule } from '@oxlint/plugins'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasAttribute } from '../utils.js'
+import { defineTemplateVisitor, getStaticBoolean, hasDefiniteAttribute } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
 
 export const requireAvatarAlt: Rule = {
   meta: {
@@ -10,20 +11,23 @@ export const requireAvatarAlt: Rule = {
       description: 'Require alternative text for Nuxt UI avatars that render an image.',
       url: docsUrl('nuxt-ui/require-avatar-alt'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
       missingAlt: 'Add `alt` to `<UAvatar>` (or explicitly mark a decorative avatar with `aria-hidden`).',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
-        if (!matcher.is(node, 'Avatar') || !hasAttribute(node, 'src'))
+      VElement(node: VueAST.VElement) {
+        if (!matcher.is(node, 'Avatar') || !hasDefiniteAttribute(node, 'src'))
           return
-        if (!hasAttribute(node, 'alt') && !hasAttribute(node, 'aria-hidden'))
-          context.report({ loc: node.startTag.loc, messageId: 'missingAlt' })
+        if (hasDefiniteAttribute(node, 'alt'))
+          return
+        if (getStaticBoolean(node, 'aria-hidden') === true)
+          return
+        context.report({ loc: node.startTag.loc, messageId: 'missingAlt' })
       },
     })
   },

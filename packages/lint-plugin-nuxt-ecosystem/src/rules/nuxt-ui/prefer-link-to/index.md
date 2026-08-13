@@ -1,19 +1,17 @@
 # `@nustack/nuxt-ui/prefer-link-to`
 
-Use `to` on `ULink` and link-capable `UButton` components. It follows Nuxt UI's Link API
-and keeps routing-aware links consistent.
+Prefer `to` on `ULink` and link-capable `UButton` components for a consistent routing-aware
+API. Nuxt UI also supports `href`, so this rule is a preference rather than a defect and is
+reported as a warning. Suppress an intentional `href` with
+`<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-link-to -->`.
 
 ```vue
 <!-- Incorrect -->
 <UButton href="/settings">Settings</UButton>
-<ULink href="/docs">Docs</ULink>
 
 <!-- Correct -->
 <UButton to="/settings">Settings</UButton>
-<ULink to="/docs">Docs</ULink>
 ```
-
-Use `data-raw` when native `href` behavior is intentional.
 
 ## Further reading
 

@@ -1,8 +1,10 @@
-import type { Rule } from '@oxlint/plugins'
-import type { ComponentMatcher } from '../component-matcher.js'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
+import type { ComponentMatcher } from '../../../utils/component-matcher.js'
+import { isNativeElement } from '../../../utils/component-matcher.js'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasRawOptOut } from '../utils.js'
+import { defineTemplateVisitor, documentRoot, getStaticAttribute } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
 
 const NATIVE_CONTROLS = new Set(['input', 'select', 'textarea'])
 
@@ -21,8 +23,8 @@ const UI_CONTROLS = new Set([
   'Textarea',
 ])
 
-function isFormControl(node: any, matcher: ComponentMatcher): boolean {
-  return NATIVE_CONTROLS.has(node.name) || matcher.isOneOf(node, UI_CONTROLS)
+function isFormControl(node: VueAST.VElement, matcher: ComponentMatcher): boolean {
+  return [...NATIVE_CONTROLS].some(tag => isNativeElement(node, tag)) || matcher.isOneOf(node, UI_CONTROLS)
 }
 
 function containsFormControl(node: any, matcher: ComponentMatcher): boolean {
@@ -32,24 +34,10 @@ function containsFormControl(node: any, matcher: ComponentMatcher): boolean {
   )
 }
 
-function staticAttribute(node: any, name: string): string | null {
-  const attribute = node.startTag.attributes.find(
-    (candidate: any) => !candidate.directive && candidate.key.name === name && candidate.value,
-  )
-  return attribute?.value.value ?? null
-}
-
 function hasControlWithId(node: any, id: string, matcher: ComponentMatcher): boolean {
-  if (node.type === 'VElement' && isFormControl(node, matcher) && staticAttribute(node, 'id') === id)
+  if (node.type === 'VElement' && isFormControl(node, matcher) && getStaticAttribute(node, 'id') === id)
     return true
   return node.children?.some((child: any) => hasControlWithId(child, id, matcher)) ?? false
-}
-
-function documentRoot(node: any): any {
-  let root = node
-  while (root.parent)
-    root = root.parent
-  return root
 }
 
 export const preferUFormField: Rule = {
@@ -59,17 +47,17 @@ export const preferUFormField: Rule = {
       description: 'Prefer UFormField over hand-written label and form-control pairs.',
       url: docsUrl('nuxt-ui/prefer-u-form-field'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
-      preferUFormField: 'Use `<UFormField label="...">` for this labelled control; add `data-raw` when a native label is intentional.',
+      preferUFormField: 'Use `<UFormField label="...">` for this labelled control.',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
-        if (node.name !== 'label' || hasRawOptOut(node))
+      VElement(node: VueAST.VElement) {
+        if (!isNativeElement(node, 'label'))
           return
 
         if (containsFormControl(node, matcher)) {
@@ -77,7 +65,7 @@ export const preferUFormField: Rule = {
           return
         }
 
-        const id = staticAttribute(node, 'for')
+        const id = getStaticAttribute(node, 'for')
         if (id && hasControlWithId(documentRoot(node), id, matcher))
           context.report({ loc: node.startTag.loc, messageId: 'preferUFormField' })
       },

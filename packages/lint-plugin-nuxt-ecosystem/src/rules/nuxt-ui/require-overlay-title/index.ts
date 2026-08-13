@@ -1,7 +1,8 @@
-import type { Rule } from '@oxlint/plugins'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasNonEmptyAttribute, hasSlot } from '../utils.js'
+import { defineTemplateVisitor, hasNonEmptyAttribute, hasSlot } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
 
 const OVERLAYS = new Set(['Modal', 'Drawer', 'Slideover'])
 
@@ -12,16 +13,16 @@ export const requireOverlayTitle: Rule = {
       description: 'Require an accessible title on Nuxt UI modal, drawer, and slideover components.',
       url: docsUrl('nuxt-ui/require-overlay-title'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
       missingTitle: 'Add a `title`, `#title`, `aria-label`, or `aria-labelledby` to this Nuxt UI overlay.',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
+      VElement(node: VueAST.VElement) {
         if (matcher.isOneOf(node, OVERLAYS)
           && !hasNonEmptyAttribute(node, 'title')
           && !hasNonEmptyAttribute(node, 'aria-label')

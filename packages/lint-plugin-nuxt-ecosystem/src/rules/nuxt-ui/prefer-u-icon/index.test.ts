@@ -1,14 +1,15 @@
-import { RuleTester } from 'eslint'
 import { describe, it } from 'vitest'
-import vueParser from 'vue-eslint-parser'
-import plugin from '../../../index.js'
+import { ruleTester as tester } from '../../../../tests/rule-tester.js'
+import { nuxtUiPlugin } from '../../../index.js'
 
 describe('prefer-u-icon', () => {
   it('prefers UIcon for Iconify classes', () => {
-    const tester = new RuleTester({ languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: vueParser } })
-    tester.run('prefer-u-icon', plugin.rules?.['prefer-u-icon'] as never, {
-      valid: [{ filename: 'component.vue', code: '<template><UIcon name="i-lucide-search" /></template>' }],
-      invalid: [{ filename: 'component.vue', code: '<template><i class="i-lucide-search" /></template>', errors: [{ messageId: 'preferIcon' }] }],
+    tester.run('prefer-u-icon', nuxtUiPlugin.rules['prefer-u-icon'], {
+      valid: [{ code: '<template><UIcon name="i-lucide-search" /></template>' }],
+      invalid: [
+        { code: '<template><i class="i-lucide-search" /></template>', errors: [{ messageId: 'preferIcon', data: { component: 'UIcon', icon: 'i-lucide-search' } }] },
+        { code: '<template><i class="i-lucide-search" /></template>', settings: { '@nustack/nuxt-ui': { enabled: true, prefix: 'Nu' } }, errors: [{ messageId: 'preferIcon', data: { component: 'NuIcon', icon: 'i-lucide-search' } }] },
+      ],
     })
   })
 })

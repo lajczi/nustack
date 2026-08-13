@@ -2,6 +2,7 @@
 export interface NustackContext {
   modules: {
     nuxtUi: boolean
+    nuxtImage: boolean
     /** MDC-capable Markdown renderer (`@nuxt/content`, `@comark/nuxt`, or legacy `@nuxtjs/mdc`). */
     mdc: boolean
   }
@@ -27,7 +28,7 @@ export interface NustackContext {
 }
 
 export const EMPTY_CONTEXT: NustackContext = {
-  modules: { nuxtUi: false, mdc: false },
+  modules: { nuxtUi: false, nuxtImage: false, mdc: false },
   nuxtUi: { prefix: 'U' },
   tailwind: { detected: false, entryPoint: null },
   autoImports: [],

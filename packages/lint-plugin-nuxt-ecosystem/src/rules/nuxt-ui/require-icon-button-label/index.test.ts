@@ -1,22 +1,29 @@
-import { RuleTester } from 'eslint'
 import { describe, it } from 'vitest'
-import vueParser from 'vue-eslint-parser'
-import plugin from '../../../index.js'
+import { ruleTester as tester } from '../../../../tests/rule-tester.js'
+import { nuxtUiPlugin } from '../../../index.js'
 
 describe('require-icon-button-label', () => {
   it('labels icon-, avatar-, and loading-only buttons', () => {
-    const tester = new RuleTester({ languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: vueParser } })
-    tester.run('require-icon-button-label', plugin.rules?.['require-icon-button-label'] as never, {
+    tester.run('require-icon-button-label', nuxtUiPlugin.rules['require-icon-button-label'], {
       valid: [
-        { filename: 'component.vue', code: '<template><UButton icon="i-lucide-search" aria-label="Search" /></template>' },
-        { filename: 'component.vue', code: '<template><UButton icon="i-lucide-save">Save</UButton></template>' },
-        { filename: 'component.vue', code: '<template><UButton :loading="false" /></template>' },
-        { filename: 'component.vue', code: '<template><UButton icon="i-lucide-save"><span>Save</span></UButton></template>' },
+        { code: '<template><UButton icon="i-lucide-search" aria-label="Search" /></template>' },
+        { code: '<template><UButton icon="i-lucide-save">Save</UButton></template>' },
+        { code: '<template><UButton :loading="false" /></template>' },
+        { code: '<template><UButton icon="i-lucide-save"><span>Save</span></UButton></template>' },
+        { code: '<template><UButton icon="i-lucide-save"><LocalizedText /></UButton></template>' },
+        { code: '<template><UButton v-bind="{ loading: false }" /></template>' },
       ],
       invalid: [
-        { filename: 'component.vue', code: '<template><UButton icon="i-lucide-search" /></template>', errors: [{ messageId: 'missingLabel' }] },
-        { filename: 'component.vue', code: '<template><UButton :avatar="avatar" /></template>', errors: [{ messageId: 'missingLabel' }] },
-        { filename: 'component.vue', code: '<template><UButton loading /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton icon="i-lucide-search" /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton :avatar="avatar" /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton loading /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton leading-icon="i-lucide-search" /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton><UIcon name="i-lucide-search" /></UButton></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton><template #leading><UIcon name="i-lucide-search" /></template></UButton></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton icon="i-lucide-search"><span aria-hidden="true">Search</span></UButton></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton icon="i-lucide-search"><span v-if="false">Search</span></UButton></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton v-bind="{ loading: true }" /></template>', errors: [{ messageId: 'missingLabel' }] },
+        { code: '<template><UButton icon="i-lucide-search"><Transition /></UButton></template>', errors: [{ messageId: 'missingLabel' }] },
       ],
     })
   })

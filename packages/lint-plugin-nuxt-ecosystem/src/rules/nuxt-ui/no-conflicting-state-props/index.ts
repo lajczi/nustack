@@ -1,7 +1,52 @@
-import type { Rule } from '@oxlint/plugins'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasAttribute, hasVModel } from '../utils.js'
+import { defineTemplateVisitor, hasDefiniteAttribute, hasVModel } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
+
+// Verified against @nuxt/ui 4.9; re-verify on the next major.
+const OPEN_STATE_COMPONENTS = [
+  'Collapsible',
+  'ContextMenu',
+  'Drawer',
+  'DropdownMenu',
+  'InputMenu',
+  'Modal',
+  'NavigationMenu',
+  'Popover',
+  'SelectMenu',
+  'Slideover',
+  'Toast',
+  'Tooltip',
+]
+
+const VALUE_STATE_COMPONENTS = [
+  'Accordion',
+  'Calendar',
+  'Checkbox',
+  'CheckboxGroup',
+  'ColorPicker',
+  'CommandPalette',
+  'Input',
+  'InputDate',
+  'InputMenu',
+  'InputNumber',
+  'InputTags',
+  'InputTime',
+  'Listbox',
+  'NavigationMenu',
+  'PinInput',
+  'RadioGroup',
+  'Select',
+  'SelectMenu',
+  'Slider',
+  'Stepper',
+  'Switch',
+  'Tabs',
+  'Textarea',
+  'Timeline',
+  'Tree',
+]
 
 export const noConflictingStateProps: Rule = {
   meta: {
@@ -10,21 +55,19 @@ export const noConflictingStateProps: Rule = {
       description: 'Disallow mixing controlled Nuxt UI state with its uncontrolled default prop.',
       url: docsUrl('nuxt-ui/no-conflicting-state-props'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
       conflicting: '`<{{ component }}>` cannot use controlled `{{ controlled }}` together with `{{ uncontrolled }}`; choose one state model.',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
-        // A component-authoring convention rather than a Nuxt UI one, so any component qualifies.
-        if (!matcher.isComponent(node))
-          return
-
-        if (hasAttribute(node, 'default-open') && (hasAttribute(node, 'open') || hasVModel(node, 'open'))) {
+      VElement(node: VueAST.VElement) {
+        if (matcher.isOneOf(node, OPEN_STATE_COMPONENTS)
+          && hasDefiniteAttribute(node, 'default-open')
+          && (hasDefiniteAttribute(node, 'open') || hasVModel(node, 'open'))) {
           context.report({
             loc: node.startTag.loc,
             messageId: 'conflicting',
@@ -32,7 +75,9 @@ export const noConflictingStateProps: Rule = {
           })
         }
 
-        if (hasAttribute(node, 'default-value') && (hasAttribute(node, 'model-value') || hasVModel(node, null))) {
+        if (matcher.isOneOf(node, VALUE_STATE_COMPONENTS)
+          && hasDefiniteAttribute(node, 'default-value')
+          && (hasDefiniteAttribute(node, 'model-value') || hasVModel(node, null))) {
           context.report({
             loc: node.startTag.loc,
             messageId: 'conflicting',

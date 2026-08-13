@@ -19,7 +19,11 @@ optional label handling.
 </template>
 ```
 
-Use `data-raw` when native markup is intentional.
+Suppress intentional native markup with
+`<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-separator -->`.
+
+Only genuine native elements are reported: a component whose name merely lowercases to the
+tag (`<Hr>`) is left alone.
 
 ## Further reading
 

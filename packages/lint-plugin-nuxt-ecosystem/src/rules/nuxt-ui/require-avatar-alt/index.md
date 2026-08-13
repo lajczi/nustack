@@ -1,7 +1,8 @@
 # `@nustack/nuxt-ui/require-avatar-alt`
 
 Require `alt` on image-backed `UAvatar` components. Use `aria-hidden` for an explicitly
-decorative avatar.
+decorative avatar. An empty `alt=""` counts as a deliberate decorative marker, but a binding
+known to be nullish (`:alt="undefined"`) renders no alternative text and is reported.
 
 ## Incorrect
 

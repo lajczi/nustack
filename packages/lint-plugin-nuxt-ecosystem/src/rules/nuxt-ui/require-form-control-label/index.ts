@@ -1,8 +1,10 @@
-import type { Rule } from '@oxlint/plugins'
-import type { ComponentMatcher } from '../component-matcher.js'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
+import type { ComponentMatcher } from '../../../utils/component-matcher.js'
+import { elementAncestor } from '../../../utils/component-matcher.js'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasNonEmptyAttribute, hasRawOptOut, hasSlot } from '../utils.js'
+import { defineTemplateVisitor, hasNonEmptyAttribute, hasSlot } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
 
 const FORM_CONTROLS = new Set([
   'Checkbox',
@@ -25,19 +27,19 @@ const FORM_CONTROLS = new Set([
   'Textarea',
 ])
 
-function hasLabeledFormFieldAncestor(node: any, matcher: ComponentMatcher): boolean {
-  let parent = node.parent
+function hasLabeledFormFieldAncestor(node: VueAST.VElement, matcher: ComponentMatcher): boolean {
+  let parent = elementAncestor(node)
   while (parent) {
     if (matcher.is(parent, 'FormField')) {
       return hasNonEmptyAttribute(parent, 'label')
         || hasSlot(parent, 'label')
     }
-    parent = parent.parent
+    parent = elementAncestor(parent)
   }
   return false
 }
 
-function hasAccessibleLabel(node: any, matcher: ComponentMatcher): boolean {
+function hasAccessibleLabel(node: VueAST.VElement, matcher: ComponentMatcher): boolean {
   return hasNonEmptyAttribute(node, 'label')
     || hasNonEmptyAttribute(node, 'legend')
     || hasNonEmptyAttribute(node, 'aria-label')
@@ -54,18 +56,18 @@ export const requireFormControlLabel: Rule = {
       description: 'Require an accessible label for Nuxt UI form controls.',
       url: docsUrl('nuxt-ui/require-form-control-label'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
       missingLabel: 'Add `label`, `legend`, `aria-label`, `aria-labelledby`, or wrap `<{{ component }}>` in a `<UFormField>` with `label` or a `#label` slot.',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
+      VElement(node: VueAST.VElement) {
         const control = matcher.matchOf(node, FORM_CONTROLS)
-        if (!control || hasRawOptOut(node) || hasAccessibleLabel(node, matcher))
+        if (!control || hasAccessibleLabel(node, matcher))
           return
         context.report({
           loc: node.startTag.loc,

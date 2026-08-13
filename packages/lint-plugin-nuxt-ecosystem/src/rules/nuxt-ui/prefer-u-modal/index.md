@@ -21,8 +21,11 @@ dialog behavior, including focus management and screen-reader semantics.
 </template>
 ```
 
-The migration is structural rather than a direct tag rename. Use `data-raw` for deliberately
-hand-written native dialogs.
+The migration is structural rather than a direct tag rename. Suppress a deliberately
+hand-written native dialog with `<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-modal -->`.
+
+Only genuine native elements are reported: a component whose name merely lowercases to the
+tag (`<Dialog>`) is left alone.
 
 ## Further reading
 

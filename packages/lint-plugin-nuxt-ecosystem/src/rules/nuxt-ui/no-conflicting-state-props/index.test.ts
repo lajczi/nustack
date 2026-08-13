@@ -1,19 +1,25 @@
-import { RuleTester } from 'eslint'
 import { describe, it } from 'vitest'
-import vueParser from 'vue-eslint-parser'
-import plugin from '../../../index.js'
+import { ruleTester as tester } from '../../../../tests/rule-tester.js'
+import { nuxtUiPlugin } from '../../../index.js'
 
 describe('no-conflicting-state-props', () => {
   it('separates controlled and uncontrolled state', () => {
-    const tester = new RuleTester({ languageOptions: { ecmaVersion: 'latest', sourceType: 'module', parser: vueParser } })
-    tester.run('no-conflicting-state-props', plugin.rules?.['no-conflicting-state-props'] as never, {
+    tester.run('no-conflicting-state-props', nuxtUiPlugin.rules['no-conflicting-state-props'], {
       valid: [
-        { filename: 'component.vue', code: '<template><UModal v-model:open="open" /></template>' },
-        { filename: 'component.vue', code: '<template><UInput default-value="Draft" /></template>' },
+        { code: '<template><UModal v-model:open="open" /></template>' },
+        { code: '<template><UInput default-value="Draft" /></template>' },
+        { code: '<template><UserCard default-value="a" model-value="b" /></template>' },
+        { code: '<template><UModal v-bind="props" /></template>' },
+        { code: '<template><UModal default-open :open="undefined" /></template>' },
+        { code: '<template><UModal default-open :open="null" /></template>' },
+        { code: '<template><UInput default-value="Draft" :model-value="undefined" /></template>' },
+        { code: '<template><UModal :default-open="undefined" open /></template>' },
       ],
       invalid: [
-        { filename: 'component.vue', code: '<template><UModal v-model:open="open" default-open /></template>', errors: [{ messageId: 'conflicting' }] },
-        { filename: 'component.vue', code: '<template><UInput v-model="value" default-value="Draft" /></template>', errors: [{ messageId: 'conflicting' }] },
+        { code: '<template><UModal v-model:open="open" default-open /></template>', errors: [{ messageId: 'conflicting' }] },
+        { code: '<template><UInput v-model="value" default-value="Draft" /></template>', errors: [{ messageId: 'conflicting' }] },
+        { code: '<template><UInput v-bind="{ defaultValue: \'Draft\', modelValue: value }" /></template>', errors: [{ messageId: 'conflicting' }] },
+        { code: '<template><UModal default-open v-model:[`open`]="open" /></template>', errors: [{ messageId: 'conflicting' }] },
       ],
     })
   })

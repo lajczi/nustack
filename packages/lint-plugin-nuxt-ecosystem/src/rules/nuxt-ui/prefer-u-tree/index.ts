@@ -1,7 +1,8 @@
-import type { Rule } from '@oxlint/plugins'
+import type { Context, Rule, Visitor } from '@oxlint/plugins'
+import type { AST as VueAST } from 'vue-eslint-parser'
 import { docsUrl } from '../../../utils/docs-url.js'
-import { componentOptionsSchema, createComponentMatcher } from '../component-matcher.js'
-import { defineTemplateVisitor, hasRawOptOut } from '../utils.js'
+import { defineTemplateVisitor } from '../../../utils/template.js'
+import { createNuxtUiMatcher } from '../components.js'
 
 function hasStaticTreeRole(node: any): boolean {
   return node.startTag.attributes.some(
@@ -17,18 +18,18 @@ export const preferUTree: Rule = {
       description: 'Prefer UTree over hand-written elements with an explicit tree role.',
       url: docsUrl('nuxt-ui/prefer-u-tree'),
     },
-    schema: componentOptionsSchema(),
+    schema: [],
     messages: {
       preferUTree:
-        'Use `<UTree>` instead of a custom `role="tree"`; custom trees must implement the complete tree keyboard and focus model. Add `data-raw` to keep it.',
+        'Use `<UTree>` instead of a custom `role="tree"`; custom trees must implement the complete tree keyboard and focus model.',
     },
   },
-  create(context: any) {
-    const matcher = createComponentMatcher(context)
+  create(context: Context): Visitor {
+    const matcher = createNuxtUiMatcher(context)
 
     return defineTemplateVisitor(context, {
-      VElement(node: any) {
-        if (matcher.is(node, 'Tree') || hasRawOptOut(node) || !hasStaticTreeRole(node))
+      VElement(node: VueAST.VElement) {
+        if (matcher.is(node, 'Tree') || !hasStaticTreeRole(node))
           return
 
         context.report({

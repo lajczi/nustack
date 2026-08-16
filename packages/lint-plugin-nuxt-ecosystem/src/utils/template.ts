@@ -33,6 +33,26 @@ export function documentRoot(node: VueAST.Node | null | undefined): VueAST.Node 
   return root ?? null
 }
 
+function childNodes(node: VueAST.Node): VueAST.VElement['children'] {
+  return node.type === 'VElement' || node.type === 'VDocumentFragment' ? node.children : []
+}
+
+export function findElement(
+  root: VueAST.Node | null | undefined,
+  predicate: (node: VueAST.VElement) => boolean,
+): VueAST.VElement | null {
+  if (!root)
+    return null
+  if (root.type === 'VElement' && predicate(root))
+    return root
+  for (const child of childNodes(root)) {
+    const found = findElement(child, predicate)
+    if (found)
+      return found
+  }
+  return null
+}
+
 export interface AttributeValue {
   present: boolean
   definite: boolean
@@ -201,7 +221,7 @@ function hasMeaningfulChildren(node: VueAST.VElement, isDecorative: (node: VueAS
   })
 }
 
-function isStaticallyHidden(node: VueAST.VElement): boolean {
+export function isStaticallyHidden(node: VueAST.VElement): boolean {
   if (getStaticBoolean(node, 'aria-hidden') === true)
     return true
   if (getStaticBoolean(node, 'hidden') === true)
@@ -261,6 +281,10 @@ export function hasSlot(node: VueAST.VElement, name: string, isDecorative: (node
 
 export function hasLabelContent(node: VueAST.VElement, isDecorative: (node: VueAST.VElement) => boolean = () => false): boolean {
   return hasMeaningfulChildren(node, isDecorative)
+}
+
+export function hasDirective(node: VueAST.VElement, name: string): boolean {
+  return node.startTag.attributes.some(attribute => attribute.directive && attribute.key.name.name === name)
 }
 
 export function hasVModel(node: VueAST.VElement, argumentName: string | null): boolean {

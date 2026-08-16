@@ -2,15 +2,18 @@ import type { AST as VueAST } from 'vue-eslint-parser'
 import { describe, expect, it } from 'vitest'
 import {
   documentRoot,
+  findElement,
   getAttributeValue,
   getStaticAttribute,
   getStaticBoolean,
   hasAttribute,
   hasDefiniteAttribute,
+  hasDirective,
   hasLabelContent,
   hasNonEmptyAttribute,
   hasSlot,
   hasVModel,
+  isStaticallyHidden,
 } from '../../src/utils/template.js'
 import { element } from '../parse.js'
 
@@ -171,9 +174,45 @@ describe('hasVModel', () => {
   })
 })
 
+describe('hasDirective', () => {
+  it('matches a directive by name, whatever its argument or value', () => {
+    expect(hasDirective(element('<UInput v-if="ready" />'), 'if')).toBe(true)
+    expect(hasDirective(element('<UInput v-else />'), 'else')).toBe(true)
+    expect(hasDirective(element('<UModal v-model:open="open" />'), 'model')).toBe(true)
+    expect(hasDirective(element('<UInput v-if="ready" />'), 'else-if')).toBe(false)
+    expect(hasDirective(element('<UInput if="ready" />'), 'if')).toBe(false)
+  })
+})
+
+describe('isStaticallyHidden', () => {
+  it('reports only the elements provably absent from the accessibility tree', () => {
+    expect(isStaticallyHidden(element('<span hidden>Save</span>'))).toBe(true)
+    expect(isStaticallyHidden(element('<span aria-hidden="true">Save</span>'))).toBe(true)
+    expect(isStaticallyHidden(element('<span v-if="false">Save</span>'))).toBe(true)
+    expect(isStaticallyHidden(element('<span v-show="\'\'">Save</span>'))).toBe(true)
+    expect(isStaticallyHidden(element('<span v-if="ready">Save</span>'))).toBe(false)
+    expect(isStaticallyHidden(element('<span>Save</span>'))).toBe(false)
+  })
+})
+
 describe('documentRoot', () => {
   it('climbs past the template element to the document fragment', () => {
     const root = documentRoot(element('<UForm><UInput /></UForm>'))
     expect(root?.type).toBe('VDocumentFragment')
+  })
+})
+
+describe('findElement', () => {
+  it('searches the whole tree from any node, including the root itself', () => {
+    const form = element('<UForm><div><UInput id="email" /></div></UForm>')
+    expect(findElement(form, node => node.rawName === 'UInput')?.rawName).toBe('UInput')
+    expect(findElement(form, node => node.rawName === 'UForm')?.rawName).toBe('UForm')
+    expect(findElement(form, node => node.rawName === 'UTextarea')).toBe(null)
+    expect(findElement(null, () => true)).toBe(null)
+  })
+
+  it('reaches siblings of the starting element through the document root', () => {
+    const label = element('<label for="email">Email</label><UInput id="email" />')
+    expect(findElement(documentRoot(label), node => node.rawName === 'UInput')?.rawName).toBe('UInput')
   })
 })

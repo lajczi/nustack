@@ -81,7 +81,7 @@ export default antfu(
 the prefix your Nuxt UI setup uses. No ecosystem options are required:
 
 ```js
-import nustack from '@nustackjs/lint'
+import { nustack } from '@nustackjs/lint/config'
 
 export default nustack()
 ```

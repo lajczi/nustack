@@ -11,7 +11,7 @@ describe('no-deprecated-modules', () => {
     tester.run('no-deprecated-modules', rule as never, {
       valid: [
         { code: 'export default defineNuxtConfig({ modules: ["@comark/nuxt", "@nuxt/content"] })' },
-        { code: 'export default defineNuxtConfig({ modules: ["@nuxt/ui"] })' },
+        { code: 'export default defineNuxtConfig({ modules: ["@nuxt/ui", "@nuxt/icon"] })' },
         // The key has to be `modules`; lookalike keys are ignored.
         { code: 'export default defineNuxtConfig({ buildModules: ["@nuxtjs/axios"] })' },
       ],
@@ -31,6 +31,10 @@ describe('no-deprecated-modules', () => {
         {
           code: 'export default defineNuxtConfig({ modules: ["@nuxtjs/axios", "@nuxt/http"] })',
           errors: [{ messageId: 'deprecated' }, { messageId: 'deprecated' }],
+        },
+        {
+          code: 'export default defineNuxtConfig({ modules: ["nuxt-icon"] })',
+          errors: [{ messageId: 'deprecated' }],
         },
       ],
     })

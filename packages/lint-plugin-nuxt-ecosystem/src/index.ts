@@ -1,9 +1,12 @@
 import type { ESLint, Linter } from 'eslint'
+import type { NuxtIconConfigOptions } from './rules/nuxt-icon/module.js'
 import type { NuxtImageConfigOptions } from './rules/nuxt-image/module.js'
 import type { NuxtUiConfigOptions } from './rules/nuxt-ui/module.js'
+import { nuxtIconConfig, nuxtIconConfigFiles, nuxtIconPlugins } from './rules/nuxt-icon/module.js'
 import { nuxtImageConfig, nuxtImagePlugins } from './rules/nuxt-image/module.js'
 import { nuxtUiConfig, nuxtUiPlugins } from './rules/nuxt-ui/module.js'
 
+export * from './rules/nuxt-icon/module.js'
 export * from './rules/nuxt-image/module.js'
 export * from './rules/nuxt-ui/module.js'
 
@@ -12,6 +15,8 @@ export interface NuxtEcosystemOptions {
   nuxtUi?: NuxtUiConfigOptions | boolean
   /** Enable Nuxt Image with defaults (`true`) or module-specific options. */
   nuxtImage?: NuxtImageConfigOptions | boolean
+  /** Enable Nuxt Icon with defaults (`true`) or module-specific options. */
+  nuxtIcon?: NuxtIconConfigOptions | boolean
 }
 
 /** Builds configs only for explicitly enabled modules. Dependency detection lives in `@nustackjs/lint`. */
@@ -25,6 +30,10 @@ export function nuxtEcosystemConfigs(options: NuxtEcosystemOptions): Linter.Conf
     configs.push(nuxtUiConfig(options.nuxtUi === true ? {} : options.nuxtUi))
   if (options.nuxtImage)
     configs.push(nuxtImageConfig(options.nuxtImage === true ? {} : options.nuxtImage))
+  if (options.nuxtIcon) {
+    const iconOptions = options.nuxtIcon === true ? {} : options.nuxtIcon
+    configs.push(nuxtIconConfig(iconOptions), nuxtIconConfigFiles(iconOptions))
+  }
 
   return configs
 }
@@ -32,4 +41,5 @@ export function nuxtEcosystemConfigs(options: NuxtEcosystemOptions): Linter.Conf
 export const nuxtEcosystemPlugins: Record<string, ESLint.Plugin> = {
   ...nuxtUiPlugins,
   ...nuxtImagePlugins,
+  ...nuxtIconPlugins,
 }

@@ -14,6 +14,7 @@ maintained replacement plus its migration guide.
 | `@nuxtjs/mdc` | `@comark/nuxt` | MDC is superseded by [Comark](https://comark.dev), faster and framework-agnostic. Markdown files stay compatible; only the JS API changes. ([migration](https://comark.dev/kb/migration-from-mdc)) |
 | `@nuxtjs/axios` | `$fetch` / `useFetch` | Nuxt 3+ ships `$fetch` (ofetch) and `useFetch`/`useAsyncData` with SSR payload dedupe. ([docs](https://nuxt.com/docs/getting-started/data-fetching)) |
 | `@nuxt/http` | `$fetch` / `useFetch` | A Nuxt 2 module, replaced by the built-in `$fetch` and data-fetching composables. ([docs](https://nuxt.com/docs/getting-started/data-fetching)) |
+| `nuxt-icon` | `@nuxt/icon` | The original module was rewritten as [`@nuxt/icon`](https://github.com/nuxt/icon). The old package is unmaintained. |
 
 ## Incorrect
 

@@ -2,10 +2,16 @@ import type { ESLint } from 'eslint'
 import { existsSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
+  NUXT_ICON_PRESET_RULES,
   NUXT_IMAGE_PRESET_RULES,
   NUXT_UI_PRESET_RULES,
   nuxtEcosystemConfigs,
   nuxtEcosystemPlugins,
+  nuxtIconConfig,
+  nuxtIconConfigFiles,
+  nuxtIconPlugin,
+  nuxtIconRules,
+  nuxtIconVueRules,
   nuxtImageConfig,
   nuxtImagePlugin,
   nuxtImageRules,
@@ -22,6 +28,7 @@ interface ModuleUnderTest {
   plugin: ESLint.Plugin & { rules: NonNullable<ESLint.Plugin['rules']> }
   presets: { minimal: PresetRules, recommended: PresetRules }
   rules: (options?: { preset?: 'minimal' | 'recommended' | false, rules?: Record<string, any> }) => Record<string, any>
+  scopedRules?: (options?: { preset?: 'minimal' | 'recommended' | false, rules?: Record<string, any> }) => Record<string, any>
   config: (options?: any) => Record<string, any>
   fixable: string[]
 }
@@ -44,6 +51,16 @@ const MODULES: ModuleUnderTest[] = [
     rules: nuxtImageRules,
     config: nuxtImageConfig,
     fixable: [],
+  },
+  {
+    directory: 'nuxt-icon',
+    namespace: '@nustack/nuxt-icon',
+    plugin: nuxtIconPlugin,
+    presets: NUXT_ICON_PRESET_RULES,
+    rules: nuxtIconRules,
+    scopedRules: nuxtIconVueRules,
+    config: nuxtIconConfig,
+    fixable: ['no-iconify-vue-props', 'no-legacy-icon-api'],
   },
 ]
 
@@ -106,7 +123,7 @@ describe.each(MODULES)('$namespace', (module) => {
     const config = module.config({ preset: 'minimal' })
     expect(config.files).toEqual(['**/*.vue'])
     expect(config.plugins).toHaveProperty(module.namespace)
-    expect(config.rules).toEqual(module.rules({ preset: 'minimal' }))
+    expect(config.rules).toEqual((module.scopedRules ?? module.rules)({ preset: 'minimal' }))
     expect(config.languageOptions).toBeUndefined()
   })
 })
@@ -163,6 +180,21 @@ describe('config settings', () => {
       '@nustack/nuxt-ui': { enabled: true, prefix: 'Nu' },
     })
   })
+
+  it('enables Nuxt Icon with its component name and optional UI settings', () => {
+    expect(nuxtIconConfig().settings).toEqual({
+      '@nustack/nuxt-icon': { enabled: true, componentName: 'Icon' },
+    })
+    expect(nuxtIconConfig({ componentName: 'NuxtIcon', nuxtUi: { prefix: 'Nu' } }).settings).toEqual({
+      '@nustack/nuxt-icon': { enabled: true, componentName: 'NuxtIcon' },
+      '@nustack/nuxt-ui': { enabled: true, prefix: 'Nu' },
+    })
+    expect(nuxtIconConfigFiles({ preset: 'minimal' }).files).toEqual([
+      '**/nuxt.config.{ts,js,mjs,mts,cjs,cts}',
+      '**/app.config.{ts,js,mjs,mts,cjs,cts}',
+    ])
+    expect(nuxtIconConfigFiles({ preset: 'minimal' }).name).toBe('nustack/nuxt-icon/config')
+  })
 })
 
 describe('nuxtEcosystemConfigs', () => {
@@ -170,7 +202,8 @@ describe('nuxtEcosystemConfigs', () => {
     expect(nuxtEcosystemConfigs({})).toEqual([])
     expect(nuxtEcosystemConfigs({ nuxtUi: true }).map(config => config.name)).toEqual(['nustack/nuxt-ui'])
     expect(nuxtEcosystemConfigs({ nuxtUi: true, nuxtImage: true }).map(config => config.name)).toEqual(['nustack/nuxt-ui', 'nustack/nuxt-image'])
-    expect(nuxtEcosystemConfigs({ nuxtUi: false, nuxtImage: false })).toEqual([])
+    expect(nuxtEcosystemConfigs({ nuxtIcon: true }).map(config => config.name)).toEqual(['nustack/nuxt-icon', 'nustack/nuxt-icon/config'])
+    expect(nuxtEcosystemConfigs({ nuxtUi: false, nuxtImage: false, nuxtIcon: false })).toEqual([])
   })
 
   it('does not silently disable every module when called without options from JavaScript', () => {
@@ -183,6 +216,6 @@ describe('nuxtEcosystemConfigs', () => {
   })
 
   it('exposes every namespace through `nuxtEcosystemPlugins`', () => {
-    expect(Object.keys(nuxtEcosystemPlugins).toSorted()).toEqual(['@nustack/nuxt-image', '@nustack/nuxt-ui'])
+    expect(Object.keys(nuxtEcosystemPlugins).toSorted()).toEqual(['@nustack/nuxt-icon', '@nustack/nuxt-image', '@nustack/nuxt-ui'])
   })
 })

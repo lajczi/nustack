@@ -71,7 +71,7 @@ export interface NustackLintOptions {
   /** Vite build/runtime conventions. */
   vite?: ConcernToggle<ViteConcernOptions>
   /**
-   * Nuxt-ecosystem rules (Nuxt UI and Nuxt Image today; Pinia/Content later). `false` disables
+   * Nuxt-ecosystem rules (Nuxt UI, Nuxt Image, and Nuxt Icon today; Pinia/Content later). `false` disables
    * the whole ecosystem; an object tunes each module, e.g. `{ nuxtUi: false }`. Each module
    * auto-gates on its own detection.
    */

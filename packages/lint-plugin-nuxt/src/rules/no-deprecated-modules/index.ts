@@ -23,6 +23,11 @@ const DEPRECATED_MODULES: Record<string, DeprecatedModule> = {
     reason: 'Built for Nuxt 2; on Nuxt 3+ it is replaced by the built-in `$fetch` (ofetch) and the `useFetch`/`useAsyncData` composables.',
     docs: 'https://nuxt.com/docs/getting-started/data-fetching',
   },
+  'nuxt-icon': {
+    replacement: '`@nuxt/icon`',
+    reason: 'The original `nuxt-icon` module was rewritten as `@nuxt/icon`. The old package is unmaintained and its component/config APIs (`IconCSS`, `nuxtIcon` in app.config) were removed in v1.',
+    docs: 'https://github.com/nuxt/icon',
+  },
 }
 
 function staticKeyName(key: any): string | null {

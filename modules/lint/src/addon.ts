@@ -85,6 +85,7 @@ export function setupNustackContext(nuxt: Nuxt): void {
     return {
       modules: detectModules(),
       nuxtUi: { prefix: (nuxt.options as any).ui?.prefix ?? 'U' },
+      nuxtIcon: { componentName: (nuxt.options as any).icon?.componentName ?? 'Icon' },
       tailwind: await detectTailwind(),
       autoImports: await collectAutoImports(),
       components,

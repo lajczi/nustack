@@ -3,12 +3,17 @@ export interface NustackContext {
   modules: {
     nuxtUi: boolean
     nuxtImage: boolean
+    nuxtIcon: boolean
     /** MDC-capable Markdown renderer (`@nuxt/content`, `@comark/nuxt`, or legacy `@nuxtjs/mdc`). */
     mdc: boolean
   }
   nuxtUi: {
     /** Component prefix from `ui.prefix`, needed to recognise `<UButton>` and friends. */
     prefix: string
+  }
+  nuxtIcon: {
+    /** Global component name from `icon.componentName`, default `Icon`. */
+    componentName: string
   }
   tailwind: {
     detected: boolean
@@ -28,8 +33,9 @@ export interface NustackContext {
 }
 
 export const EMPTY_CONTEXT: NustackContext = {
-  modules: { nuxtUi: false, nuxtImage: false, mdc: false },
+  modules: { nuxtUi: false, nuxtImage: false, nuxtIcon: false, mdc: false },
   nuxtUi: { prefix: 'U' },
+  nuxtIcon: { componentName: 'Icon' },
   tailwind: { detected: false, entryPoint: null },
   autoImports: [],
   components: [],

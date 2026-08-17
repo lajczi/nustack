@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@nustackjs/lint-plugin-nuxt-ecosystem)](https://www.npmjs.com/package/@nustackjs/lint-plugin-nuxt-ecosystem)
 [![GitHub License](https://img.shields.io/github/license/Zerya-Dev/nustack)](https://github.com/Zerya-Dev/nustack/blob/master/LICENSE)
 
-ESLint rules for the [Nuxt module ecosystem](https://nuxt.com/modules). The plugin currently supports `@nuxt/ui` and `@nuxt/image`, with plans to expand.
+ESLint rules for the [Nuxt module ecosystem](https://nuxt.com/modules). The plugin currently supports `@nuxt/ui`, `@nuxt/image`, and `@nuxt/icon`, with plans to expand.
 
 Every rule is based on the respective module's official documentation and recommendations.
 
@@ -18,7 +18,8 @@ pnpm add -D eslint eslint-plugin-vue @typescript-eslint/parser @nustackjs/lint-p
 ```
 
 Enable the modules your project actually has — nothing is implicit, this package never inspects
-your dependencies. Every rule reads the SFC template, so all of them are scoped to `**/*.vue`.
+your dependencies. Component rules read the SFC template and are scoped to `**/*.vue`. `@nuxt/icon`
+also ships config-file rules for `nuxt.config` and `app.config`.
 
 <details>
 <summary><b>ESLint</b> — <code>eslint.config.js</code></summary>
@@ -38,6 +39,7 @@ export default [
   ...nuxtEcosystemConfigs({
     nuxtUi: true,
     nuxtImage: true,
+    nuxtIcon: true,
   }),
 ]
 ```
@@ -48,10 +50,11 @@ Omitted modules stay disabled:
 ```js
 nuxtEcosystemConfigs({ nuxtUi: true })
 nuxtEcosystemConfigs({ nuxtImage: { preset: 'minimal' } })
+nuxtEcosystemConfigs({ nuxtIcon: { preset: 'minimal' } })
 ```
 
-`nuxtUiConfig()` and `nuxtImageConfig()` are also exported directly, for when only one of them
-is needed.
+`nuxtUiConfig()`, `nuxtImageConfig()`, and `nuxtIconConfig()` are also exported directly, for when
+only one of them is needed.
 
 </details>
 
@@ -68,6 +71,7 @@ export default antfu(
   ...nuxtEcosystemConfigs({
     nuxtUi: true,
     nuxtImage: true,
+    nuxtIcon: true,
   }),
 )
 ```
@@ -77,8 +81,8 @@ export default antfu(
 <details>
 <summary><b><code>@nustackjs/lint</code></b> — <code>eslint.config.js</code></summary>
 
-`@nustackjs/lint` detects `@nuxt/ui` and `@nuxt/image` and enables their configs for you, with
-the prefix your Nuxt UI setup uses. No ecosystem options are required:
+`@nustackjs/lint` detects `@nuxt/ui`, `@nuxt/image`, and `@nuxt/icon` and enables their configs
+for you, with the prefix your Nuxt UI setup uses. No ecosystem options are required:
 
 ```js
 import { nustack } from '@nustackjs/lint/config'
@@ -93,6 +97,7 @@ export default nustack({
   nuxtEcosystem: {
     nuxtUi: { rules: { '@nustack/nuxt-ui/prefer-u-button': 'off' } },
     nuxtImage: false,
+    nuxtIcon: false,
   },
 })
 ```
@@ -119,6 +124,7 @@ Every module ships the same two presets, and defaults to `recommended`:
 nuxtEcosystemConfigs({
   nuxtUi: { preset: 'minimal', prefix: 'Nu' },
   nuxtImage: { preset: 'recommended' },
+  nuxtIcon: { preset: 'recommended' },
 })
 ```
 
@@ -139,9 +145,9 @@ nuxtUiConfig({
 })
 ```
 
-For full control, `nuxtUiPlugins`/`nuxtImagePlugins` (or `nuxtEcosystemPlugins` for all of them)
-and `nuxtUiRules()`/`nuxtImageRules()` are exported separately, so the plugins and their rule
-records can go into a flat-config object you build yourself.
+For full control, `nuxtUiPlugins`/`nuxtImagePlugins`/`nuxtIconPlugins` (or `nuxtEcosystemPlugins`
+for all of them) and `nuxtUiRules()`/`nuxtImageRules()`/`nuxtIconRules()` are exported separately,
+so the plugins and their rule records can go into a flat-config object you build yourself.
 
 ## Rules
 
@@ -191,6 +197,32 @@ they cover Nuxt UI's `<UColorModeImage>` and `<ProseImg>`.
 | [`no-assets-src`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-image/no-assets-src/index.md) | `minimal` | No | Disallow build-time `~/assets` paths in `src`. |
 | [`require-image-alt`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-image/require-image-alt/index.md) | `minimal` | No | Require alt text on `NuxtImg` and `NuxtPicture`. |
 | [`prefer-nuxt-img`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-image/prefer-nuxt-img/index.md) | `recommended` | No | Prefer `NuxtImg` over raw `img`. |
+
+### `@nuxt/icon`
+
+Rule IDs use the `@nustack/nuxt-icon/<rule>` namespace. Set `componentName` on `nuxtIconConfig()`
+(matching `icon.componentName`, default `Icon`). When Nuxt UI settings are present, the same
+rules also cover `<UIcon>`.
+
+| Rule | Preset | Fix | Description |
+|---|---|---|---|
+| [`require-icon-name`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/require-icon-name/index.md) | `minimal` | No | Require a non-empty `name` on Icon components. |
+| [`no-legacy-icon-api`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-legacy-icon-api/index.md) | `minimal` | Partial | Disallow `IconCSS`, `IconSVG`, and emoji names removed in v1. |
+| [`no-iconify-vue-props`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-iconify-vue-props/index.md) | `minimal` | Yes | Disallow Iconify Vue `icon` / `customise` props. |
+| [`no-invalid-icon-name`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-invalid-icon-name/index.md) | `minimal` | No | Disallow static names that cannot resolve (`/`, `.`, whitespace). |
+| [`no-icon-slot-fallback`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-icon-slot-fallback/index.md) | `minimal` | No | Disallow default-slot fallback content removed in v1. |
+| [`no-customize-in-nuxt-config`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-customize-in-nuxt-config/index.md) | `minimal` | No | Disallow `icon.customize` in `nuxt.config` (throws at setup). |
+| [`no-legacy-app-config-key`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-legacy-app-config-key/index.md) | `minimal` | No | Disallow the v0 `nuxtIcon` key in `app.config`. |
+| [`require-client-bundle-when-provider-none`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/require-client-bundle-when-provider-none/index.md) | `minimal` | No | Require a client bundle when `provider` is `none`. |
+| [`no-custom-collections-without-bundle`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-custom-collections-without-bundle/index.md) | `minimal` | No | Disallow custom collections the Iconify provider cannot serve. |
+| [`no-invalid-icon-config-enum`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-invalid-icon-config-enum/index.md) | `minimal` | No | Disallow invalid `provider` / `mode` / `fallbackToApi` / `serverBundle` values. |
+| [`no-scan-glob-without-vue`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-scan-glob-without-vue/index.md) | `minimal` | No | Disallow `scan.globInclude` that drops `*.vue`. |
+| [`prefer-icon`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/prefer-icon/index.md) | `recommended` | No | Prefer `Icon` over raw Iconify class markup. |
+| [`prefer-icon-over-iconify-vue`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/prefer-icon-over-iconify-vue/index.md) | `recommended` | No | Prefer `@nuxt/icon` over importing `Icon` from `@iconify/vue`. |
+| [`no-dynamic-icon-name`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-dynamic-icon-name/index.md) | `recommended` | No | Disallow names the client-bundle scanner cannot see. |
+| [`no-ignored-mode-on-component-icon`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-ignored-mode-on-component-icon/index.md) | `recommended` | No | Disallow `mode` when `name` is a global Vue component. |
+| [`no-width-height-instead-of-size`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/no-width-height-instead-of-size/index.md) | `recommended` | No | Prefer `size` over `width` / `height`. |
+| [`require-valid-icon-size`](https://github.com/Zerya-Dev/nustack/blob/master/packages/lint-plugin-nuxt-ecosystem/src/rules/nuxt-icon/require-valid-icon-size/index.md) | `recommended` | No | Require `size` to be a number or CSS length. |
 
 ## License
 

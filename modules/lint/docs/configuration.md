@@ -157,6 +157,8 @@ nustack({
 
 Use `nuxtUi: true` to force the default preset on, or `nuxtUi: false` to disable the detected
 integration. The configured Nuxt UI component prefix is read from `nuxt.config.ts` automatically.
+`@nuxt/icon` is detected the same way (and also when `@nuxt/ui` is present, because UI ships it);
+`icon.componentName` is read from `nuxt.config.ts`.
 
 The `prefer-*` rules have no attribute-level opt-out. Suppress a deliberate exception with
 `<!-- eslint-disable-next-line @nustack/nuxt-ui/prefer-u-button -->` in the template — this works

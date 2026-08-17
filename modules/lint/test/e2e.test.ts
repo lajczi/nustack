@@ -11,8 +11,9 @@ import { applyNustackConfig } from '../src/config'
 const TAILWIND_ENTRY = fileURLToPath(new URL('./fixtures/tailwind.css', import.meta.url))
 
 const CONTEXT: NustackContext = {
-  modules: { nuxtUi: true, nuxtImage: true, mdc: false },
+  modules: { nuxtUi: true, nuxtImage: true, nuxtIcon: true, mdc: false },
   nuxtUi: { prefix: 'U' },
+  nuxtIcon: { componentName: 'Icon' },
   tailwind: { detected: true, entryPoint: TAILWIND_ENTRY },
   autoImports: ['ref', 'useRuntimeConfig'],
   components: ['UButton'],
@@ -80,6 +81,20 @@ describe('e2e: composed config lints real code', () => {
       { context: { ...CONTEXT, modules: { ...CONTEXT.modules, nuxtImage: false } } },
     )
     expect(ruleIds(messages).some(id => id.startsWith('@nustack/nuxt-image/'))).toBe(false)
+  })
+
+  it('flags a nameless <Icon> when @nuxt/icon is detected (nuxt-icon concern)', async () => {
+    const messages = await lint(`<script setup lang="ts"></script><template><Icon /></template>`, 'app/pages/x.vue')
+    expect(ruleIds(messages)).toContain('@nustack/nuxt-icon/require-icon-name')
+  })
+
+  it('leaves the nuxt-icon rules out when the module is not installed', async () => {
+    const messages = await lint(
+      `<script setup lang="ts"></script><template><Icon /></template>`,
+      'app/pages/x.vue',
+      { context: { ...CONTEXT, modules: { ...CONTEXT.modules, nuxtIcon: false } } },
+    )
+    expect(ruleIds(messages).some(id => id.startsWith('@nustack/nuxt-icon/'))).toBe(false)
   })
 
   it('flags a redundant explicit auto-import (nuxt concern, fixable)', async () => {

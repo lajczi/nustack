@@ -60,6 +60,7 @@ export function detectStandaloneContext(cwd: string = process.cwd()): NustackCon
   return {
     modules: resolveModuleFlags(installedModules),
     nuxtUi: { ...EMPTY_CONTEXT.nuxtUi },
+    nuxtIcon: { ...EMPTY_CONTEXT.nuxtIcon },
     tailwind: detectTailwind(cwd, resolvable),
     autoImports: [],
     components: [],
@@ -71,9 +72,10 @@ export function detectStandaloneContext(cwd: string = process.cwd()): NustackCon
  * `EMPTY_CONTEXT`. The manual escape hatch for projects where auto-detection isn't
  * enough, e.g. supplying `autoImports`/`components` outside Nuxt.
  */
-export type PartialContext = Partial<Omit<NustackContext, 'modules' | 'nuxtUi' | 'tailwind'>> & {
+export type PartialContext = Partial<Omit<NustackContext, 'modules' | 'nuxtUi' | 'nuxtIcon' | 'tailwind'>> & {
   modules?: Partial<NustackContext['modules']>
   nuxtUi?: Partial<NustackContext['nuxtUi']>
+  nuxtIcon?: Partial<NustackContext['nuxtIcon']>
   tailwind?: Partial<NustackContext['tailwind']>
 }
 
@@ -83,6 +85,7 @@ export function createContext(partial: PartialContext = {}): NustackContext {
     ...partial,
     modules: { ...EMPTY_CONTEXT.modules, ...partial.modules },
     nuxtUi: { ...EMPTY_CONTEXT.nuxtUi, ...partial.nuxtUi },
+    nuxtIcon: { ...EMPTY_CONTEXT.nuxtIcon, ...partial.nuxtIcon },
     tailwind: { ...EMPTY_CONTEXT.tailwind, ...partial.tailwind },
   }
 }

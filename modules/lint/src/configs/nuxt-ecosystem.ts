@@ -1,8 +1,8 @@
-import type { NuxtImagePreset, NuxtUiPreset } from '@nustackjs/lint-plugin-nuxt-ecosystem'
+import type { NuxtIconPreset, NuxtImagePreset, NuxtUiPreset } from '@nustackjs/lint-plugin-nuxt-ecosystem'
 import type { Linter } from 'eslint'
 import type { NustackContext } from '../context'
 import type { ConcernOptions, ConcernToggle } from '../utils'
-import { nuxtImageConfig, nuxtUiConfig } from '@nustackjs/lint-plugin-nuxt-ecosystem'
+import { nuxtIconConfig, nuxtIconConfigFiles, nuxtImageConfig, nuxtUiConfig } from '@nustackjs/lint-plugin-nuxt-ecosystem'
 import { isEnabled, resolveConcernRules, subOptions } from '../utils'
 
 export interface NuxtUiConcernOptions extends ConcernOptions {
@@ -15,12 +15,19 @@ export interface NuxtImageConcernOptions extends ConcernOptions {
   preset?: NuxtImagePreset | false
 }
 
+export interface NuxtIconConcernOptions extends ConcernOptions {
+  /** Rule preset from the Nuxt Icon integration. @default 'recommended' */
+  preset?: NuxtIconPreset | false
+}
+
 /** Options for detected Nuxt ecosystem integrations. */
 export interface NuxtEcosystemOptions {
   /** Nuxt UI component preferences. Auto-gated on `@nuxt/ui` detection. */
   nuxtUi?: ConcernToggle<NuxtUiConcernOptions>
   /** Nuxt Image usage rules. Auto-gated on `@nuxt/image` detection. */
   nuxtImage?: ConcernToggle<NuxtImageConcernOptions>
+  /** Nuxt Icon usage rules. Auto-gated on `@nuxt/icon` (and `@nuxt/ui`, which ships it). */
+  nuxtIcon?: ConcernToggle<NuxtIconConcernOptions>
 }
 
 export type NuxtEcosystemToggle = ConcernToggle<NuxtEcosystemOptions>
@@ -50,6 +57,17 @@ export function nuxtEcosystemConfig(
       preset: moduleOptions.preset,
       rules: resolveConcernRules(moduleOptions),
     }))
+  }
+
+  if (isEnabled(options.nuxtIcon, context.modules.nuxtIcon)) {
+    const moduleOptions = subOptions(options.nuxtIcon)
+    const iconOptions = {
+      componentName: context.nuxtIcon.componentName,
+      nuxtUi: context.modules.nuxtUi ? { prefix: context.nuxtUi.prefix } : false as const,
+      preset: moduleOptions.preset,
+      rules: resolveConcernRules(moduleOptions),
+    }
+    configs.push(nuxtIconConfig(iconOptions), nuxtIconConfigFiles(iconOptions))
   }
 
   return configs
